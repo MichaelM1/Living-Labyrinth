@@ -7,8 +7,8 @@ pygame.init()
 win = pygame.display.set_mode((1280, 720))
 pygame.display.set_caption("Living Labyrinth")
 clock = pygame.time.Clock()
-background = pygame.image.load('background.jpg').convert()
-walz = pygame.image.load('walls.png')
+background = pygame.image.load('assets/background.jpg').convert()
+walz = pygame.image.load('assets/walls.png')
 
 # declare additional variables for helper functions
 spaces = []
@@ -94,7 +94,7 @@ class Player(object):
         self.player_height = height = 20
         self.triggerX = 0
         self.triggerY = 0
-        spritesheet = pygame.image.load('player.png').convert()
+        spritesheet = pygame.image.load('assets/player.png').convert()
         sprite_rect = pygame.Rect(0, 0, width, height)
         image = pygame.Surface(sprite_rect.size).convert()
         image.blit(spritesheet, (0, 0), sprite_rect)
@@ -139,7 +139,7 @@ class Wall(object):
     def __init__(self, pos):
         self.player_width = width = 20
         self.player_height = height = 20
-        w = pygame.image.load('walls.png').convert()
+        w = pygame.image.load('assets/walls.png').convert()
         sprite_rect = pygame.Rect(width, 0, width, height)
         image = pygame.Surface(sprite_rect.size).convert()
         image.blit(w, (0, 0), sprite_rect)
