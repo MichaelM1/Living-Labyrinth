@@ -4,7 +4,7 @@ import random
 pygame.init()
 
 # setup display window for pygame with background
-win = pygame.display.set_mode((1025, 725))
+win = pygame.display.set_mode((1280, 720))
 pygame.display.set_caption("Living Labyrinth")
 clock = pygame.time.Clock()
 background = pygame.image.load('background.jpg').convert()
