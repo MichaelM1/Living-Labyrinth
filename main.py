@@ -4,20 +4,17 @@ import random
 pygame.init()
 
 # setup display window for pygame with background
-win = pygame.display.set_mode((1280, 720))
+window = pygame.display.set_mode((1280, 720))
 pygame.display.set_caption("Living Labyrinth")
 clock = pygame.time.Clock()
 background = pygame.image.load('assets/background.jpg').convert()
-walz = pygame.image.load('assets/walls.png')
+wallImage = pygame.image.load('assets/walls.png').convert()
 
 # declare additional variables for helper functions
-spaces = []
 walls = []
 wallsStr = []
 s = 32
 x = y = 0
-run = True
-time = 0
 w = 64
 grid = []
 visited = []
@@ -103,8 +100,8 @@ class Player(object):
         self.player_img = image
         self.player_img_rect = self.player_img.get_rect()
 
-    def draw(self, win):
-        win.blit(self.player_img, (self.x, self.y))
+    def draw(self, window):
+        window.blit(self.player_img, (self.x, self.y))
 
     def move(self, dx, dy):
         self.x -= dx
@@ -139,10 +136,9 @@ class Wall(object):
     def __init__(self, pos):
         self.player_width = width = 20
         self.player_height = height = 20
-        w = pygame.image.load('assets/walls.png').convert()
         sprite_rect = pygame.Rect(width, 0, width, height)
         image = pygame.Surface(sprite_rect.size).convert()
-        image.blit(w, (0, 0), sprite_rect)
+        image.blit(wallImage, (0, 0), sprite_rect)
         alpha = image.get_at((0, 0))
         image.set_colorkey(alpha)
         self.player_img = image
@@ -156,20 +152,20 @@ class Wall(object):
     def __str__(self):
         return "Wall(" + str(self.x) + "," + str(self.y) + ")"
 
-    def draw(self, win):
-        win.blit(walz, (self.x, self.y))
+    def draw(self, window):
+        window.blit(wallImage, (self.x, self.y))
 
 
 def redrawGameWindow():
-    win.blit(background, [0, 0])
-    ball.draw(win)
+    window.blit(background, [0, 0])
+    player.draw(window)
     # Draw all walls that exist inside list walls
     for wall in walls:
-        wall.draw(win)
+        wall.draw(window)
         wall.hitbox = (wall.x, wall.y, wall.player_width, wall.player_height)  # change wall hitbox
-        # pygame.draw.rect(win, (0, 0, 0), wall.hitbox, 2) #draw wall hitbox
-    ball.hitbox = (ball.x, ball.y, 10, 10)  # change player hitbox
-    # pygame.draw.rect(win,(255,0,0),ball.hitbox,2)
+        # pygame.draw.rect(window, (0, 0, 0), wall.hitbox, 2) #draw wall hitbox
+    player.hitbox = (player.x, player.y, 10, 10)  # change player hitbox
+    # pygame.draw.rect(window,(255,0,0),player.hitbox,2)
     pygame.display.flip()
 
 
@@ -283,9 +279,10 @@ def scrambleMaze(x=32, y=32):
     visited.clear()
 
 
-ball = Player(32, 32)
+player = Player(32, 32)
 fillMaze()
 scrambleMaze()
+run = True
 while run:
     clock.tick(40)
     for event in pygame.event.get():
@@ -293,14 +290,14 @@ while run:
             run = False
     keys = pygame.key.get_pressed()
     if keys[pygame.K_LEFT]:
-        ball.move(5, 0)
+        player.move(5, 0)
     elif keys[pygame.K_RIGHT]:
-        ball.move(-5, 0)
+        player.move(-5, 0)
     elif keys[pygame.K_UP]:
-        ball.move(0, 5)
+        player.move(0, 5)
     elif keys[pygame.K_DOWN]:
-        ball.move(0, -5)
-    win.fill((0, 0, 0))
+        player.move(0, -5)
+    window.fill((0, 0, 0))
     redrawGameWindow()
 
 pygame.quit()
