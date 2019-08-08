@@ -1,6 +1,12 @@
 import pygame
 import random
 
+# declare constants
+WALL_SIZE = 16
+PLAYER_WIDTH = 16
+PLAYER_HEIGHT = 16
+HITBOX_LEEWAY = 3
+
 pygame.init()
 
 # setup display window for pygame with background
@@ -8,7 +14,7 @@ window = pygame.display.set_mode((1280, 720))
 pygame.display.set_caption("Living Labyrinth")
 clock = pygame.time.Clock()
 background = pygame.image.load('assets/background.jpg').convert()
-wallIMG = pygame.image.load('assets/walls.png')
+wallIMG = pygame.image.load('assets/walls.png').convert()
 
 # declare additional variables for helper functions
 walls = []
@@ -87,12 +93,12 @@ class Player(object):
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.player_width = width = 20
-        self.player_height = height = 20
+        self.width = PLAYER_WIDTH	
+        self.height = PLAYER_HEIGHT
         self.triggerX = 0
         self.triggerY = 0
         spritesheet = pygame.image.load('assets/player.png').convert()
-        sprite_rect = pygame.Rect(0, 0, width, height)
+        sprite_rect = pygame.Rect(0, 0, self.width, self.height)
         image = pygame.Surface(sprite_rect.size).convert()
         image.blit(spritesheet, (0, 0), sprite_rect)
         alpha = image.get_at((0, 0))
@@ -106,21 +112,21 @@ class Player(object):
     def move(self, dx, dy):
         self.x -= dx
         self.y -= dy
-        col = False
+        collision = False
         for wall in walls:
             # if wall and player rectangle overlap, revert movement
-            if self.x + 10 > (wall.x + wall.hitbox[2]) or wall.x > (self.hitbox[2] + self.x):
-                col = False
-            elif self.y + 10 > (wall.y + wall.hitbox[3]) or wall.y > (self.y + self.hitbox[3]):
-                col = False
+            if self.x > (wall.hitbox[0] + wall.hitbox[2]) or wall.hitbox[0] > (self.x + self.width):
+                collision = False
+            elif self.y > (wall.hitbox[1] + wall.hitbox[3]) or wall.hitbox[1] > (self.y + self.height):
+                collision = False
             else:
-                col = True
+                collision = True
                 break
-        if col:
+        if collision:
             self.x += dx
             self.y += dy
         # if player moves, check if player has exceeded movement for changing walls
-        if col == False:
+        if collision == False:
             self.triggerX += dx
             self.triggerY += dy
             if abs(self.triggerX) + abs(self.triggerY) > (12 * 16):
@@ -132,22 +138,12 @@ class Player(object):
 
 # Initiated with a position in the window
 class Wall(object):
-
     def __init__(self, pos):
-        self.player_width = width = 20
-        self.player_height = height = 20
-        sprite_rect = pygame.Rect(width, 0, width, height)
-        image = pygame.Surface(sprite_rect.size).convert()
-        image.blit(wallIMG, (0, 0), sprite_rect)
-        alpha = image.get_at((0, 0))
-        image.set_colorkey(alpha)
-        self.player_img = image
-        self.player_img_rect = self.player_img.get_rect()
         self.x = pos[0]
         self.y = pos[1]
         walls.append(self)
         wallsStr.append(str(self))
-        self.hitbox = (self.x, self.y, width, height)
+        self.hitbox = (self.x + HITBOX_LEEWAY, self.y + HITBOX_LEEWAY, WALL_SIZE - (HITBOX_LEEWAY * 2), WALL_SIZE - (HITBOX_LEEWAY * 2))
 
     def __str__(self):
         return "Wall(" + str(self.x) + "," + str(self.y) + ")"
@@ -162,10 +158,8 @@ def redrawGameWindow():
     # Draw all walls that exist inside list walls
     for wall in walls:
         wall.draw(window)
-        wall.hitbox = (wall.x, wall.y, wall.player_width, wall.player_height)  # change wall hitbox
-        # pygame.draw.rect(window, (0, 0, 0), wall.hitbox, 2) #draw wall hitbox
-    player.hitbox = (player.x, player.y, 10, 10)  # change player hitbox
-    # pygame.draw.rect(window,(255,0,0),player.hitbox,2)
+        # pygame.draw.rect(window, (0, 0, 255), wall.hitbox, 2) #draw wall hitbox
+    # pygame.draw.rect(window,(255,0,0),(player.x, player.y, player.width, player.height),2)
     pygame.display.flip()
 
 
@@ -197,41 +191,16 @@ def right(x, y):
     del wallsStr[i]
 
 
-# create non-changing walls in window as wall objects corresponding to all "W" variables
-for row in range(len(map)):
-    for col in range(len(map[0])):
-        if map[row][col] == "W":
-            Wall((x, y))
-        x += 16
-    y += 16
-    x = 0
-
-
 # create changing walls in window as wall objects corresponding to all "S" variables
 def fillMaze():
-    x = y = 0
     for row in range(len(map)):
         for col in range(len(map[0])):
-            if (map[row])[col] == "S":
+            if map[row][col] == "S":
+                x = col * WALL_SIZE
+                y = row * WALL_SIZE
                 i = 'Wall(' + str(x) + ',' + str(y) + ')'
                 if i not in wallsStr:
                     Wall((x, y))
-            x += 16
-        y += 16
-        x = 0
-
-
-# fill in positions for all rooms in window
-def build_grid(x, y):
-    for i in range(1, 8):
-        x = 32
-        y = y + 64
-        for j in range(1, 11):
-            grid.append((x, y))
-            x = x + 64
-
-
-build_grid(32, -32)
 
 
 def scrambleMaze(x=32, y=32):
@@ -279,24 +248,42 @@ def scrambleMaze(x=32, y=32):
     visited.clear()
 
 
+# fill in positions for all rooms in window
+def build_grid(x, y):
+    for i in range(1, 8):
+        x = 32
+        y = y + 64
+        for j in range(1, 11):
+            grid.append((x, y))
+            x = x + 64
+
+
+# create non-changing walls in window as wall objects corresponding to all "W" variables
+for row in range(len(map)):
+    for col in range(len(map[0])):
+        if map[row][col] == "W":
+            Wall((col * WALL_SIZE, row * WALL_SIZE))
+
+build_grid(32, -32)
+
 player = Player(32, 32)
 fillMaze()
 scrambleMaze()
 run = True
 while run:
-    clock.tick(40)
+    clock.tick(30)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
     keys = pygame.key.get_pressed()
     if keys[pygame.K_LEFT]:
-        player.move(5, 0)
+        player.move(2, 0)
     elif keys[pygame.K_RIGHT]:
-        player.move(-5, 0)
+        player.move(-2, 0)
     elif keys[pygame.K_UP]:
-        player.move(0, 5)
+        player.move(0, 2)
     elif keys[pygame.K_DOWN]:
-        player.move(0, -5)
+        player.move(0, -2)
     window.fill((0, 0, 0))
     redrawGameWindow()
 
