@@ -8,7 +8,7 @@ window = pygame.display.set_mode((1280, 720))
 pygame.display.set_caption("Living Labyrinth")
 clock = pygame.time.Clock()
 background = pygame.image.load('assets/background.jpg').convert()
-wallImage = pygame.image.load('assets/walls.png').convert()
+wallIMG = pygame.image.load('assets/walls.png')
 
 # declare additional variables for helper functions
 walls = []
@@ -123,7 +123,7 @@ class Player(object):
         if col == False:
             self.triggerX += dx
             self.triggerY += dy
-            if (abs(self.triggerX) + abs(self.triggerY) > (12 * 16)):
+            if abs(self.triggerX) + abs(self.triggerY) > (12 * 16):
                 self.triggerX = 0
                 self.triggerY = 0
                 fillMaze()
@@ -138,7 +138,7 @@ class Wall(object):
         self.player_height = height = 20
         sprite_rect = pygame.Rect(width, 0, width, height)
         image = pygame.Surface(sprite_rect.size).convert()
-        image.blit(wallImage, (0, 0), sprite_rect)
+        image.blit(wallIMG, (0, 0), sprite_rect)
         alpha = image.get_at((0, 0))
         image.set_colorkey(alpha)
         self.player_img = image
@@ -153,7 +153,7 @@ class Wall(object):
         return "Wall(" + str(self.x) + "," + str(self.y) + ")"
 
     def draw(self, window):
-        window.blit(wallImage, (self.x, self.y))
+        window.blit(wallIMG, (self.x, self.y))
 
 
 def redrawGameWindow():
