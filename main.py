@@ -110,8 +110,8 @@ class Player(object):
         window.blit(self.player_img, (self.x, self.y))
 
     def move(self, dx, dy):
-        self.x -= dx
-        self.y -= dy
+        self.x += dx
+        self.y += dy
         collision = False
         for wall in walls:
             # if wall and player rectangle overlap, revert movement
@@ -123,8 +123,8 @@ class Player(object):
                 collision = True
                 break
         if collision:
-            self.x += dx
-            self.y += dy
+            self.x -= dx
+            self.y -= dy
         # if player moves, check if player has exceeded movement for changing walls
         if collision == False:
             self.triggerX += dx
@@ -275,15 +275,18 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
+    dx = dy = 0
     keys = pygame.key.get_pressed()
     if keys[pygame.K_LEFT]:
-        player.move(2, 0)
-    elif keys[pygame.K_RIGHT]:
-        player.move(-2, 0)
-    elif keys[pygame.K_UP]:
-        player.move(0, 2)
-    elif keys[pygame.K_DOWN]:
-        player.move(0, -2)
+        dx -= 2
+    if keys[pygame.K_RIGHT]:
+        dx += 2
+    if keys[pygame.K_UP]:
+        dy -= 2
+    if keys[pygame.K_DOWN]:
+        dy += 2
+    player.move(dx, dy)
+
     window.fill((0, 0, 0))
     redrawGameWindow()
 
