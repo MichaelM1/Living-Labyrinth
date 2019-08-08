@@ -8,7 +8,7 @@ win = pygame.display.set_mode((1280, 720))
 pygame.display.set_caption("Living Labyrinth")
 clock = pygame.time.Clock()
 background = pygame.image.load('assets/background.jpg').convert()
-walz = pygame.image.load('assets/walls.png')
+wallIMG = pygame.image.load('assets/walls.png')
 
 # declare additional variables for helper functions
 spaces = []
@@ -126,7 +126,7 @@ class Player(object):
         if col == False:
             self.triggerX += dx
             self.triggerY += dy
-            if (abs(self.triggerX) + abs(self.triggerY) > (12 * 16)):
+            if abs(self.triggerX) + abs(self.triggerY) > (12 * 16):
                 self.triggerX = 0
                 self.triggerY = 0
                 fillMaze()
@@ -157,19 +157,19 @@ class Wall(object):
         return "Wall(" + str(self.x) + "," + str(self.y) + ")"
 
     def draw(self, win):
-        win.blit(walz, (self.x, self.y))
+        win.blit(wallIMG, (self.x, self.y))
 
 
 def redrawGameWindow():
     win.blit(background, [0, 0])
-    ball.draw(win)
+    player.draw(win)
     # Draw all walls that exist inside list walls
     for wall in walls:
         wall.draw(win)
         wall.hitbox = (wall.x, wall.y, wall.player_width, wall.player_height)  # change wall hitbox
         # pygame.draw.rect(win, (0, 0, 0), wall.hitbox, 2) #draw wall hitbox
-    ball.hitbox = (ball.x, ball.y, 10, 10)  # change player hitbox
-    # pygame.draw.rect(win,(255,0,0),ball.hitbox,2)
+    player.hitbox = (player.x, player.y, 10, 10)  # change player hitbox
+    # pygame.draw.rect(win,(255,0,0),player.hitbox,2)
     pygame.display.flip()
 
 
@@ -283,7 +283,7 @@ def scrambleMaze(x=32, y=32):
     visited.clear()
 
 
-ball = Player(32, 32)
+player = Player(32, 32)
 fillMaze()
 scrambleMaze()
 while run:
@@ -293,13 +293,13 @@ while run:
             run = False
     keys = pygame.key.get_pressed()
     if keys[pygame.K_LEFT]:
-        ball.move(5, 0)
+        player.move(5, 0)
     elif keys[pygame.K_RIGHT]:
-        ball.move(-5, 0)
+        player.move(-5, 0)
     elif keys[pygame.K_UP]:
-        ball.move(0, 5)
+        player.move(0, 5)
     elif keys[pygame.K_DOWN]:
-        ball.move(0, -5)
+        player.move(0, -5)
     win.fill((0, 0, 0))
     redrawGameWindow()
 
