@@ -12,7 +12,7 @@ class Wall(object):
         self.hitbox = (self.x + HITBOX_LEEWAY, self.y + HITBOX_LEEWAY, WALL_SIZE - (HITBOX_LEEWAY * 2), WALL_SIZE - (HITBOX_LEEWAY * 2))
     def __str__(self):
         return "Wall("+ str(self.x)+","+ str(self.y)+")" 
-    def draw(self, win):
+    def draw(self, win): 
         win.blit(self.wallImg, (self.x, self.y))
 
 class Data(object):
