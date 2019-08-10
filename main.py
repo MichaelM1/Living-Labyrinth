@@ -1,79 +1,63 @@
-import pygame, sys, random, time
+import pygame
+import random
 import wall
 import maze
 import player
-
 pygame.init()
-
-#music
-pygame.mixer.init()
-pygame.mixer_music.load("soundtrack.mp3")
-pygame.mixer_music.set_volume(0.5)
-pygame.mixer_music.play(-1)
-
-win = pygame.display.set_mode((1296, 720))
+    
+win = pygame.display.set_mode((1025, 725), pygame.FULLSCREEN)
 pygame.display.set_caption("Living Labyrinth")
 clock = pygame.time.Clock()
 background = pygame.image.load('assets/background.jpg').convert()
 walz = pygame.image.load('assets/walls.png')
+    
+class Game(object):
 
-map_width = 45
-map_length = 87
-data = wall.Data()
-maze = maze.Maze(data)
-x = y = 0
-run = True
-player = player.Player(32, 32, data, maze)
+    def __init__(self):
+        self.map_width = 45
+        self.map_length = 61
+        self.grid_width = self.map_width//4
+        self.grid_length = self.map_length//4
+        self.data = wall.Data()
+        self.maze = maze.Maze(self.data, self.map_width, self.map_length, self.grid_width, self.grid_length)
+        self.player = player.Player(352,352,self.data,self.maze)
+        self.run = True
+        self.time = 0
 
+    def redrawGameWindow(self):
+        win.blit(background, [0,0])
+        for wall in self.data.walls:
+            wall.draw(win)
+        self.player.draw(win)
+        pygame.display.flip()
 
+    def update(self,x ,y):
+        self.player.move(x, y)
+        self.player.checkForCollision(x,y)
+        self.player.checkForSteps(x,y)
 
-def redrawGameWindow():
-    win.blit(background, [0, 0])
-    for wall in data.walls:
-        wall.draw(win)
-    player.draw(win)
-    pygame.display.flip()
+    def start(self):
+        self.maze.mazeSkeleton()
+        self.maze.fillMaze(0,0)
+        self.maze.scrambleMaze(32,32)
+        while self.run:
+            clock.tick(30)
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.run = False
+            keys = pygame.key.get_pressed()
+            if keys[pygame.K_LEFT]: 
+                self.update(2,0)
+            if keys[pygame.K_RIGHT]:
+                self.update(-2,0)
+            if keys[pygame.K_UP]:
+                self.update(0,2)
+            if keys[pygame.K_DOWN]:
+                self.update(0,-2)
+            win.fill((0, 0, 0))
+            self.redrawGameWindow()
 
-def startMaze():
-    x = y = 0
-    for row in range(45):
-        for col in range(87):
-            if row == 0 or row == 44:
-                data.add(wall.Wall((x, y)))
-                data.addString(str(wall.Wall((x, y))))
-            elif row % 4 == 0 and (col - 2) % 4 != 0:
-                data.add(wall.Wall((x, y)))
-                data.addString(str(wall.Wall((x, y))))
-            elif row % 2 == 1 and col % 4 == 0:
-                data.add(wall.Wall((x, y)))
-                data.addString(str(wall.Wall((x, y))))
-            elif (row - 2) % 4 == 0 and col == 0 or col == 86:
-                data.add(wall.Wall((x, y)))
-                data.addString(str(wall.Wall((x, y))))
-            x += 16
-        y += 16
-        x = 0
+game = Game()
+game.start()
 
-
-startMaze()
-maze.fillMaze()
-maze.scrambleMaze()
-
-while run:
-    clock.tick(30)
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_LEFT]:
-        player.move(2, 0)
-    if keys[pygame.K_RIGHT]:
-        player.move(-2, 0)
-    if keys[pygame.K_UP]:
-        player.move(0, 2)
-    if keys[pygame.K_DOWN]:
-        player.move(0, -2)
-    win.fill((0, 0, 0))
-    redrawGameWindow()
-
-pygame.quit()
+pygame.quit()   
