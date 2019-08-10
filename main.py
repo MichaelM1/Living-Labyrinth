@@ -11,14 +11,14 @@ pygame.mixer_music.load("soundtrack.mp3")
 pygame.mixer_music.set_volume(0.5)
 pygame.mixer_music.play(-1)
 
-win = pygame.display.set_mode((1280, 720))
+win = pygame.display.set_mode((1296, 720))
 pygame.display.set_caption("Living Labyrinth")
 clock = pygame.time.Clock()
 background = pygame.image.load('assets/background.jpg').convert()
 walz = pygame.image.load('assets/walls.png')
 
-map_width = 29
-map_length = 41
+map_width = 45
+map_length = 87
 data = wall.Data()
 maze = maze.Maze(data)
 x = y = 0
@@ -36,9 +36,9 @@ def redrawGameWindow():
 
 def startMaze():
     x = y = 0
-    for row in range(29):
-        for col in range(41):
-            if row == 0 or row == 28:
+    for row in range(45):
+        for col in range(87):
+            if row == 0 or row == 44:
                 data.add(wall.Wall((x, y)))
                 data.addString(str(wall.Wall((x, y))))
             elif row % 4 == 0 and (col - 2) % 4 != 0:
@@ -47,7 +47,7 @@ def startMaze():
             elif row % 2 == 1 and col % 4 == 0:
                 data.add(wall.Wall((x, y)))
                 data.addString(str(wall.Wall((x, y))))
-            elif (row - 2) % 4 == 0 and col == 0 or col == 40:
+            elif (row - 2) % 4 == 0 and col == 0 or col == 86:
                 data.add(wall.Wall((x, y)))
                 data.addString(str(wall.Wall((x, y))))
             x += 16

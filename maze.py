@@ -14,9 +14,9 @@ class Maze(object):
 
     def fillMaze(self):
         x = y = 0
-        for row in range(29):
-            for col in range(41):
-                if (row - 2) % 4 == 0 and col % 4 == 0 and col != 0 and col != 40:
+        for row in range(45):
+            for col in range(87):
+                if (row - 2) % 4 == 0 and col % 4 == 0 and col != 0 and col != 86:
                     i = 'Wall(' + str(x) + ',' + str(y) + ')'
                     if i not in self.data.wallsStr:
                         self.data.add(wall.Wall((x, y)))
@@ -31,10 +31,10 @@ class Maze(object):
             x = 0
 
     def build_grid(self, x, y):
-        for i in range(1, 8):
+        for i in range(1, 12):
             x = 32
             y = y + 64
-            for j in range(1, 11):
+            for j in range(1, 21):
                 self.grid.append((x, y))
                 x = x + 64
 
