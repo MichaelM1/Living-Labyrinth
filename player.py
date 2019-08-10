@@ -1,6 +1,6 @@
 import maze
 import wall
-import  pygame
+import pygame
 
 PLAYER_WIDTH = 2560
 PLAYER_HEIGHT = 1440
@@ -29,7 +29,7 @@ class Player(object):
     def draw(self, win):
         win.blit(self.player_img, (self.x - 1319, self.y - 708))
         self.hitbox = (self.x, self.y, 16, 16)
-        #pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
+        # pygame.draw.rect(win, (255, 0, 0), self.hitbox, 2)
 
     def move(self, dx, dy):
         self.x -= dx

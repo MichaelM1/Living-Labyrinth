@@ -1,10 +1,15 @@
-import pygame
-import random
+import pygame, sys, random, time
 import wall
 import maze
 import player
 
 pygame.init()
+
+#music
+pygame.mixer.init()
+pygame.mixer_music.load("soundtrack.mp3")
+pygame.mixer_music.set_volume(0.5)
+pygame.mixer_music.play(-1)
 
 win = pygame.display.set_mode((1280, 720))
 pygame.display.set_caption("Living Labyrinth")
@@ -19,6 +24,7 @@ maze = maze.Maze(data)
 x = y = 0
 run = True
 player = player.Player(32, 32, data, maze)
+
 
 
 def redrawGameWindow():
@@ -54,7 +60,7 @@ maze.fillMaze()
 maze.scrambleMaze()
 
 while run:
-    clock.tick(40)
+    clock.tick(30)
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
