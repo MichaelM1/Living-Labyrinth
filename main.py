@@ -16,6 +16,7 @@ walz = pygame.image.load('assets/walls.png')
 menuScreen = pygame.image.load('assets/menuScreen.png').convert()
 startButton = pygame.image.load('assets/start.PNG').convert()
 
+
 class Game(object):
 
     def __init__(self):
@@ -65,7 +66,10 @@ class Game(object):
             win.fill((0, 0, 0))
             self.redrawGameWindow()
 
+
 game = Game()
+
+
 def menuStart():
     menu = True
     while menu:
@@ -78,33 +82,33 @@ def menuStart():
             if mouse == 1 and x > 300 and x < 665 and y > 300 and y < 394:
                 game.start()
                 menu = False
-        win.fill((0,0,0))
-        win.blit(menuScreen, [0,0])
+        win.fill((0, 0, 0))
+        win.blit(menuScreen, [0, 0])
         originalImg = pygame.image.load('assets/button.png').convert()
         originalImg_rect = pygame.Rect(0, 0, 365, 94)
         image = pygame.Surface(originalImg_rect.size).convert()
         image.blit(originalImg, (0, 0), originalImg_rect)
         alpha = image.get_at((0, 0))
         image.set_colorkey(alpha)
-        win.blit(image,(250,300))
+        win.blit(image, (250, 300))
         options = pygame.image.load('assets/options.PNG')
-        win.blit(options,(650,300))
+        win.blit(options, (650, 300))
         quit = pygame.image.load('assets/quit.PNG')
-        win.blit(quit,(450,400))
+        win.blit(quit, (450, 400))
         if x > 250 and x < 615 and y > 300 and y < 394:
-            pygame.draw.rect(win,(255,0,0),(250,300,365,94),2)
+            pygame.draw.rect(win, (255, 0, 0), (250, 300, 365, 94), 2)
         if x > 650 and x < 1015 and y > 300 and y < 394:
-            pygame.draw.rect(win,(255,0,0),(650,300,365,94),2)
-        if x > 450 and x < 815 and y >400 and y <494:
-            pygame.draw.rect(win,(255,0,0),(450,400,365,94),2)
+            pygame.draw.rect(win, (255, 0, 0), (650, 300, 365, 94), 2)
+        if x > 450 and x < 815 and y > 400 and y < 494:
+            pygame.draw.rect(win, (255, 0, 0), (450, 400, 365, 94), 2)
         if x > 250 and x < 615 and y > 300 and y < 394 and mouse == 1:
             game.start()
             menu = False
-        if x > 450 and x < 815 and y >400 and y <494 and mouse == 1:
+        if x > 450 and x < 815 and y > 400 and y < 494 and mouse == 1:
             menu = False
         pygame.display.flip()
-        
+
+
 menuStart()
-    
 
 pygame.quit()
