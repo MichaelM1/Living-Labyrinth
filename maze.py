@@ -1,9 +1,8 @@
-import wall
 import random
+import items
 
 
 class Maze(object):
-
     def __init__(self, data, map_width, map_length, grid_width, grid_length):
         self.grid = []
         self.stack = []
@@ -15,51 +14,59 @@ class Maze(object):
         self.map_length = map_length
         self.grid_width = grid_width
         self.grid_length = grid_length
+        #self.test = []
+        #self.testStr =[]
 
-    def mazeSkeleton(self):
-        x = y = 0
+    def mazeSkeleton(self, x, y):
+        temp = x
         for row in range(self.map_width):
             for col in range(self.map_length):
                 if row == 0 or row == self.map_width - 1:
-                    self.data.add(wall.Wall((x, y)))
-                    self.data.addString(str(wall.Wall((x, y))))
+                    self.data.add(items.Wall((x, y)))
+                    self.data.addString(str(items.Wall((x, y))))
+                    #self.test.append(items.Wall((x, y)))
+                    #self.testStr.append(str(items.Wall((x, y))))
                 elif row % 4 == 0 and (col - 2) % 4 != 0:
-                    self.data.add(wall.Wall((x, y)))
-                    self.data.addString(str(wall.Wall((x, y))))
+                    self.data.add(items.Wall((x, y)))
+                    self.data.addString(str(items.Wall((x, y))))
+                    #self.test.append(items.Wall((x, y)))
+                    #self.testStr.append(str(items.Wall((x, y))))
                 elif row % 2 == 1 and col % 4 == 0:
-                    self.data.add(wall.Wall((x, y)))
-                    self.data.addString(str(wall.Wall((x, y))))
+                    self.data.add(items.Wall((x, y)))
+                    self.data.addString(str(items.Wall((x, y))))
+                    #self.test.append(items.Wall((x, y)))
+                    #self.testStr.append(str(items.Wall((x, y))))
                 elif (row - 2) % 4 == 0 and col == 0 or col == self.map_length - 1:
-                    self.data.add(wall.Wall((x, y)))
-                    self.data.addString(str(wall.Wall((x, y))))
+                    self.data.add(items.Wall((x, y)))
+                    self.data.addString(str(items.Wall((x, y))))
+                    #self.test.append(items.Wall((x, y)))
+                    #self.testStr.append(str(items.Wall((x, y))))
                 x += 16
             y += 16
-            x = 0
+            x = temp
 
     def fillMaze(self, x, y):
-        # temp = x
-        x = 0
+        temp = x
         for row in range(self.map_width):
             for col in range(self.map_length):
                 if (row - 2) % 4 == 0 and col % 4 == 0 and col != 0 and col != self.map_length - 1:
                     i = 'Wall(' + str(x) + ',' + str(y) + ')'
                     if i not in self.data.wallsStr:
-                        self.data.add(wall.Wall((x, y)))
-                        self.data.addString(str(wall.Wall((x, y))))
+                        self.data.add(items.Wall((x, y)))
+                        self.data.addString(str(items.Wall((x, y))))
                 if row % 4 == 0 and (col - 2) % 4 == 0:
                     i = 'Wall(' + str(x) + ',' + str(y) + ')'
                     if i not in self.data.wallsStr:
-                        self.data.add(wall.Wall((x, y)))
-                        self.data.addString(str(wall.Wall((x, y))))
+                        self.data.add(items.Wall((x, y)))
+                        self.data.addString(str(items.Wall((x, y))))
                 x += 16
             y += 16
-            x = 0
+            x = temp
 
     def build_grid(self, x, y):
         temp = x
         for i in range(1, self.grid_width + 1):
-            # x=temp
-            x = 32
+            x = temp
             y = y + 64
             for j in range(1, self.grid_length + 1):
                 self.grid.append((x, y))
@@ -90,37 +97,37 @@ class Maze(object):
         del self.data.wallsStr[i]
 
     def scrambleMaze(self, x, y):
-        self.build_grid(32, -32)
+        self.build_grid(x, -64 + y)
         self.stack.append((x, y))
         self.visited.append((x, y))
-        while len(self.stack) > 0:
+        while self.stack != []:
             cell = []
             if (x + self.radius, y) not in self.visited and (x + self.radius, y) in self.grid:
-                cell.append("right")
+                cell.append(1)
             if (x - self.radius, y) not in self.visited and (x - self.radius, y) in self.grid:
-                cell.append("left")
+                cell.append(2)
             if (x, y + self.radius) not in self.visited and (x, y + self.radius) in self.grid:
-                cell.append("down")
+                cell.append(3)
             if (x, y - self.radius) not in self.visited and (x, y - self.radius) in self.grid:
-                cell.append("up")
-            if len(cell) > 0:
+                cell.append(4)
+            if cell != []:
                 cell_chosen = (random.choice(cell))
-                if cell_chosen == "right":
+                if cell_chosen == 1:
                     self.right(x, y)
                     x = x + self.radius
                     self.visited.append((x, y))
                     self.stack.append((x, y))
-                elif cell_chosen == "left":
+                elif cell_chosen == 2:
                     self.left(x, y)
                     x = x - self.radius
                     self.visited.append((x, y))
                     self.stack.append((x, y))
-                elif cell_chosen == "down":
+                elif cell_chosen == 3:
                     self.down(x, y)
                     y = y + self.radius
                     self.visited.append((x, y))
                     self.stack.append((x, y))
-                elif cell_chosen == "up":
+                elif cell_chosen == 4:
                     self.up(x, y)
                     y = y - self.radius
                     self.visited.append((x, y))
