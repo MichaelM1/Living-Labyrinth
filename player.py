@@ -4,10 +4,6 @@ PLAYER_WIDTH = 16
 PLAYER_HEIGHT = 16
 HITBOX_LEEWAY = 3
 WALL_SIZE = 16
-walkRight = [pygame.image.load('assets/right0.png'), pygame.image.load('assets/right1.png'), pygame.image.load('assets/right2.png')]
-walkLeft = [pygame.image.load('assets/left0.png'), pygame.image.load('assets/left1.png'), pygame.image.load('assets/left2.png')]
-walkUp = [pygame.image.load('assets/up0.png'), pygame.image.load('assets/up1.png'), pygame.image.load('assets/up2.png')]
-walkDown = [pygame.image.load('assets/down0.png'), pygame.image.load('assets/down1.png'), pygame.image.load('assets/down2.png')]
 
 class Player(object):
     def __init__(self, x, y, data, maze, exit):

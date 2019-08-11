@@ -35,7 +35,20 @@ class Game(object):
         self.maze = maze.Maze(self.data, self.map_width, self.map_length, self.grid_width, self.grid_length)
         self.run = True
         self.time = 0
-        self.player = player.Player(352, 352, self.data, self.maze)
+        self.player = player.Player(352, 352, self.data, self.maze, self.exit)
+
+    def endStart(self):
+        end = True
+        while end:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    end = False
+                keys = pygame.key.get_pressed()
+                if keys[pygame.K_q]:
+                    end = False
+            win.fill((0, 0, 0))
+            win.blit(endScreen, [0, 0])
+            pygame.display.flip()
 
     def render_fog(self):
         # draw the light mask (gradient) onto fog image
@@ -47,7 +60,7 @@ class Game(object):
     def redrawGameWindow(self):
         if self.player.end:
             self.run = False
-            endStart()
+            self.endStart()
         win.blit(background, [0, 0])
         for wall in self.data.walls:
             wall.draw(win)
@@ -160,21 +173,6 @@ def menuStart():
             menu = False
         pygame.display.flip()
 
-
-menuStart()
-
-def endStart():
-    end = True
-    while end:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                end = False
-            keys = pygame.key.get_pressed()
-            if keys[pygame.K_q]:
-                end = False
-        win.fill((0, 0, 0))
-        win.blit(endScreen, [0, 0])
-        pygame.display.flip()
 
 menuStart()
 pygame.quit()
