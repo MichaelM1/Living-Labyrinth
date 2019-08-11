@@ -3,8 +3,8 @@ import wall
 import pygame
 import time
 
-PLAYER_WIDTH = 2560
-PLAYER_HEIGHT = 1440
+PLAYER_WIDTH = 16
+PLAYER_HEIGHT = 16
 HITBOX_LEEWAY = 3
 WALL_SIZE = 16
 
@@ -17,7 +17,7 @@ class Player(object):
         self.height = height = PLAYER_HEIGHT
         self.triggerX = 0
         self.triggerY = 0
-        spritesheet = pygame.image.load('assets/player1.png').convert()
+        spritesheet = pygame.image.load('assets/player.png').convert()
         sprite_rect = pygame.Rect(0, 0, width, height)
         image = pygame.Surface(sprite_rect.size).convert()
         image.blit(spritesheet, (0, 0), sprite_rect)
@@ -32,7 +32,7 @@ class Player(object):
         self.stepsY = 0
 
     def draw(self, win):
-        win.blit(self.player_img, (self.x - 1319, self.y - 708))
+        win.blit(self.player_img, (self.x, self.y))
         self.hitbox = (self.x, self.y, 16, 16)
 
     def move(self, dx, dy):
