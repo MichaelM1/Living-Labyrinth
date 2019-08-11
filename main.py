@@ -16,6 +16,12 @@ walz = pygame.image.load('assets/walls.png')
 menuScreen = pygame.image.load('assets/menuScreen.png').convert()
 startButton = pygame.image.load('assets/start.PNG').convert()
 
+musiclist = ['Sound/Aria Math.mp3', 'Sound/Beginning 2.mp3', 'Sound/Clark.mp3', 'Sound/Danny.mp3',
+                     'Sound/Dreiton.mp3', 'Sound/Dry Hands.mp3', 'Sound/Haggstrom.mp3', 'Sound/Haunt Muskie.mp3',
+                     'Sound/Living Mice.mp3', 'Sound/Mice On Venus.mp3', 'Sound/Minecraft.mp3', 'Sound/Moog City 2.mp3',
+                     'Sound/Mutation.mp3', 'Sound/Subwoofer Lullaby.mp3', 'Sound/Sweden.mp3', 'Sound/Taswell.mp3',
+                     'Sound/Wet Hands.mp3']
+
 
 class Game(object):
 
@@ -46,7 +52,9 @@ class Game(object):
         self.maze.mazeSkeleton()
         self.maze.fillMaze(0, 0)
         self.maze.scrambleMaze(32, 32)
-        pygame.mixer_music.load("soundtrack.mp3")
+        randomlist = list(range(0, 16))
+        random.shuffle(randomlist)
+        pygame.mixer_music.load(musiclist[randomlist.pop()])
         pygame.mixer_music.set_volume(0.5)
         pygame.mixer_music.play(-1)
         while self.run:
@@ -79,7 +87,7 @@ def menuStart():
             x = pygame.mouse.get_pos()[0]
             y = pygame.mouse.get_pos()[1]
             mouse = pygame.mouse.get_pressed()[0]
-            if mouse == 1 and x > 300 and x < 665 and y > 300 and y < 394:
+            if mouse == 1 and 300 < x < 665 and 300 < y < 394:
                 game.start()
                 menu = False
         win.fill((0, 0, 0))
@@ -95,16 +103,16 @@ def menuStart():
         win.blit(options, (650, 300))
         quit = pygame.image.load('assets/quit.PNG')
         win.blit(quit, (450, 400))
-        if x > 250 and x < 615 and y > 300 and y < 394:
+        if 250 < x < 615 and 300 < y < 394:
             pygame.draw.rect(win, (255, 0, 0), (250, 300, 365, 94), 2)
-        if x > 650 and x < 1015 and y > 300 and y < 394:
+        if 650 < x < 1015 and 300 < y < 394:
             pygame.draw.rect(win, (255, 0, 0), (650, 300, 365, 94), 2)
-        if x > 450 and x < 815 and y > 400 and y < 494:
+        if 450 < x < 815 and 400 < y < 494:
             pygame.draw.rect(win, (255, 0, 0), (450, 400, 365, 94), 2)
-        if x > 250 and x < 615 and y > 300 and y < 394 and mouse == 1:
+        if 250 < x < 615 and 300 < y < 394 and mouse == 1:
             game.start()
             menu = False
-        if x > 450 and x < 815 and y > 400 and y < 494 and mouse == 1:
+        if 450 < x < 815 and 400 < y < 494 and mouse == 1:
             menu = False
         pygame.display.flip()
 
