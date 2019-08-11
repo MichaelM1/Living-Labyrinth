@@ -4,10 +4,10 @@ PLAYER_WIDTH = 16
 PLAYER_HEIGHT = 16
 HITBOX_LEEWAY = 3
 WALL_SIZE = 16
-walkRight = [pygame.image.load('assets/right0.png'), pygame.image.load('assets/right1.png'), pygame.image.load('assets/right2.png')]
-walkLeft = [pygame.image.load('assets/left0.png'), pygame.image.load('assets/left1.png'), pygame.image.load('assets/left2.png')]
-walkUp = [pygame.image.load('assets/up0.png'), pygame.image.load('assets/up1.png'), pygame.image.load('assets/up2.png')]
-walkDown = [pygame.image.load('assets/down0.png'), pygame.image.load('assets/down1.png'), pygame.image.load('assets/down2.png')]
+walkRight = [pygame.image.load('assets/right01.png'), pygame.image.load('assets/right11.png'), pygame.image.load('assets/right21.png')]
+walkLeft = [pygame.image.load('assets/left01.png'), pygame.image.load('assets/left11.png'), pygame.image.load('assets/left21.png')]
+walkUp = [pygame.image.load('assets/up01.png'), pygame.image.load('assets/up11.png'), pygame.image.load('assets/up21.png')]
+walkDown = [pygame.image.load('assets/down01.png'), pygame.image.load('assets/down11.png'), pygame.image.load('assets/down21.png')]
 
 class Player(object):
     def __init__(self, x, y, data, maze, exit):
@@ -59,7 +59,7 @@ class Player(object):
         self.hitbox = (self.x, self.y, 16, 16)
 
     def move(self, dx, dy):
-        self.walk_count +=1
+        self.walk_count += 3
         self.x -= dx
         self.y -= dy
 

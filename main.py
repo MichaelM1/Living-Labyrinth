@@ -19,15 +19,15 @@ endScreen = pygame.image.load('assets/end.jpg').convert()
 
 musiclist = ['Sound/Aria Math.mp3', 'Sound/Beginning 2.mp3', 'Sound/Clark.mp3', 'Sound/Danny.mp3',
              'Sound/Dreiton.mp3', 'Sound/Dry Hands.mp3', 'Sound/Haggstrom.mp3', 'Sound/Haunt Muskie.mp3',
-             'Sound/Living Mice.mp3', 'Sound/Mice On Venus.mp3', 'Sound/Minecraft.mp3', 'Sound/Moog City 2.mp3',
+             'Sound/Living Mice.mp3', 'Sound/Mice On Venus.mp3', 'Sound/Moog City 2.mp3',
              'Sound/Mutation.mp3', 'Sound/Subwoofer Lullaby.mp3', 'Sound/Sweden.mp3', 'Sound/Taswell.mp3',
              'Sound/Wet Hands.mp3']
 
 
 class Game(object):
     def __init__(self):
-        self.map_width = 29
-        self.map_length = 41
+        self.map_width = 45
+        self.map_length = 81
         self.grid_width = self.map_width // 4
         self.grid_length = self.map_length // 4
         self.data = items.Data()
@@ -35,7 +35,7 @@ class Game(object):
         self.maze = maze.Maze(self.data, self.map_width, self.map_length, self.grid_width, self.grid_length)
         self.run = True
         self.time = 0
-        self.player = player.Player(352, 352, self.data, self.maze)
+        self.player = player.Player(352, 352, self.data, self.maze, self.exit)
 
     def render_fog(self):
         # draw the light mask (gradient) onto fog image
@@ -78,33 +78,33 @@ class Game(object):
                     self.run = False
             keys = pygame.key.get_pressed()
             if keys[pygame.K_LEFT]:
-                self.player.move(2, 0)
-                self.player.checkForCollision(2, 0)
-                self.player.checkForSteps(2, 0)
+                self.player.move(3, 0)
+                self.player.checkForCollision(3, 0)
+                self.player.checkForSteps(3, 0)
                 self.player.left = True
                 self.player.right = False
                 self.player.up = False
                 self.player.down = False
             if keys[pygame.K_RIGHT]:
-                self.player.move(-2, 0)
-                self.player.checkForCollision(-2, 0)
-                self.player.checkForSteps(-2, 0)
+                self.player.move(-3, 0)
+                self.player.checkForCollision(-3, 0)
+                self.player.checkForSteps(-3, 0)
                 self.player.left = False
                 self.player.right = True
                 self.player.up = False
                 self.player.down = False
             if keys[pygame.K_UP]:
-                self.player.move(0, 2)
-                self.player.checkForCollision(0, 2)
-                self.player.checkForSteps(0, 2)
+                self.player.move(0, 3)
+                self.player.checkForCollision(0, 3)
+                self.player.checkForSteps(0, 3)
                 self.player.left = False
                 self.player.right = False
                 self.player.up = True
                 self.player.down = False
             if keys[pygame.K_DOWN]:
-                self.player.move(0, -2)
-                self.player.checkForCollision(0, -2)
-                self.player.checkForSteps(0, -2)
+                self.player.move(0, -3)
+                self.player.checkForCollision(0, -3)
+                self.player.checkForSteps(0, -3)
                 self.player.left = False
                 self.player.right = False
                 self.player.up = False
@@ -159,9 +159,6 @@ def menuStart():
         if 450 < x < 815 and 400 < y < 494 and mouse == 1:
             menu = False
         pygame.display.flip()
-
-
-menuStart()
 
 def endStart():
     end = True
