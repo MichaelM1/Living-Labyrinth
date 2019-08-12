@@ -55,7 +55,7 @@ class Player(object):
         self.hitbox = (self.x, self.y, 16, 16)
 
     def move(self, dx, dy):
-        self.walk_count +=1
+        self.walk_count += 3
         self.x -= dx
         self.y -= dy
         if (self.x > self.exit.x + 16 or self.exit.x > self.x + 16) or (self.y > self.exit.y + 16 or self.exit.y > self.y + 16):
