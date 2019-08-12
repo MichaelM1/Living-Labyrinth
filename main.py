@@ -19,23 +19,22 @@ endScreen = pygame.image.load('assets/end.jpg').convert()
 
 musiclist = ['Sound/Aria Math.mp3', 'Sound/Beginning 2.mp3', 'Sound/Clark.mp3', 'Sound/Danny.mp3',
              'Sound/Dreiton.mp3', 'Sound/Dry Hands.mp3', 'Sound/Haggstrom.mp3', 'Sound/Haunt Muskie.mp3',
-             'Sound/Living Mice.mp3', 'Sound/Mice On Venus.mp3', 'Sound/Minecraft.mp3', 'Sound/Moog City 2.mp3',
+             'Sound/Living Mice.mp3', 'Sound/Mice On Venus.mp3', 'Sound/Moog City 2.mp3',
              'Sound/Mutation.mp3', 'Sound/Subwoofer Lullaby.mp3', 'Sound/Sweden.mp3', 'Sound/Taswell.mp3',
              'Sound/Wet Hands.mp3']
 
 
 class Game(object):
-    def __init__(self):
-        self.map_width = 29
-        self.map_length = 41
-        self.grid_width = self.map_width // 4
-        self.grid_length = self.map_length // 4
-        self.data = items.Data()
-        self.exit = items.Exit((32 + 64 * random.randint(1, self.grid_width - 2), (32 + 64 * random.randint(1, self.grid_length - 5))))
-        self.maze = maze.Maze(self.data, self.map_width, self.map_length, self.grid_width, self.grid_length)
+    def __init__(self, width, length, maze, exit, data, player, level):
+        self.map_width = width
+        self.map_length = length
+        self.data = data
+        self.maze = maze
         self.run = True
         self.time = 0
-        self.player = player.Player(352, 352, self.data, self.maze, self.exit)
+        self.exit = exit
+        self.player = player
+        self.level = level
 
     def endStart(self):
         end = True
@@ -58,27 +57,41 @@ class Game(object):
         win.blit(self.fog, (0, 0), special_flags=pygame.BLEND_MULT)
 
     def redrawGameWindow(self):
-        if self.player.end:
-            self.run = False
-            self.endStart()
         win.blit(background, [0, 0])
-        for wall in self.data.walls:
-            wall.draw(win)
-        self.exit.draw(win)
+        for room in self.data.rooms:    
+            room.draw(win)
+        if self.level == 2:
+            self.exit.drawEnd(win)
+        else:
+            self.exit.draw(win)
         self.player.draw(win)
         self.render_fog()
         pygame.display.flip()
 
     def update(self, x, y):
         self.player.move(x, y)
-        self.player.checkForCollision(x, y)
+        self.player.CheckForCollision(x, y)
         self.player.checkForSteps(x, y)
 
+    def increaseLevel(self):
+        self.level += 1
+        if self.level == 3:
+            self.endStart()
+        side = (self.level + 1) * 4
+        lside = (self.level + 1) * 4
+        data2 = items.Data()
+        if self.level > 1:
+            lside = 8
+        maze2 = maze.Maze(data2, lside, side)
+        exit2 = items.Exit([32 + 64 * random.randint(0, side - 1), 32 + 64 * random.randint(0, lside - 1)])
+        player2 = player.Player(32, 32, data2, maze2, exit2)
+        self.__init__(8,8, maze2, exit2, data2, player2, self.level)
+        self.start()
 
     def start(self):
-        self.maze.mazeSkeleton(0, 0)
-        self.maze.fillMaze(0, 0)
-        self.maze.scrambleMaze(32, 32)
+        self.maze.MazeSkeleton(0,0)
+        self.maze.FillMaze()
+        self.maze.ScrambleMaze()
         randomlist = list(range(0, 16))
         random.shuffle(randomlist)
         pygame.mixer_music.load(musiclist[randomlist.pop()])
@@ -91,33 +104,25 @@ class Game(object):
                     self.run = False
             keys = pygame.key.get_pressed()
             if keys[pygame.K_LEFT]:
-                self.player.move(2, 0)
-                self.player.checkForCollision(2, 0)
-                self.player.checkForSteps(2, 0)
+                self.update(3,0)
                 self.player.left = True
                 self.player.right = False
                 self.player.up = False
                 self.player.down = False
             if keys[pygame.K_RIGHT]:
-                self.player.move(-2, 0)
-                self.player.checkForCollision(-2, 0)
-                self.player.checkForSteps(-2, 0)
+                self.update(-3,0)
                 self.player.left = False
                 self.player.right = True
                 self.player.up = False
                 self.player.down = False
             if keys[pygame.K_UP]:
-                self.player.move(0, 2)
-                self.player.checkForCollision(0, 2)
-                self.player.checkForSteps(0, 2)
+                self.update(0,3)
                 self.player.left = False
                 self.player.right = False
                 self.player.up = True
                 self.player.down = False
             if keys[pygame.K_DOWN]:
-                self.player.move(0, -2)
-                self.player.checkForCollision(0, -2)
-                self.player.checkForSteps(0, -2)
+                self.update(0,-3)
                 self.player.left = False
                 self.player.right = False
                 self.player.up = False
@@ -130,10 +135,15 @@ class Game(object):
             self.light_mask = pygame.image.load(('assets/light_mask.png')).convert_alpha()
             self.light_mask = pygame.transform.scale(self.light_mask, (250, 250))
             self.light_rect = self.light_mask.get_rect()
+            if self.player.end:
+                self.increaseLevel()
             self.redrawGameWindow()
 
-
-game = Game()
+data1 = items.Data()
+maze1 = maze.Maze(data1, 4, 4)
+exit1 = items.Exit([32 + 64 * random.randint(0, 4 - 1), 32 + 64 * random.randint(0, 4 - 1)])
+player1 = player.Player(32, 32, data1, maze1, exit1)
+game = Game(4, 4, maze1, exit1, data1, player1, 0)
 
 
 def menuStart():
