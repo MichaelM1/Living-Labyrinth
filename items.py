@@ -19,55 +19,88 @@ class Room(object):
     def __str__(self):
         return "Room("+ str(self.row)+","+ str(self.col)+")"
 
-    def draw(self, win):
-        win.blit(self.wallImg, (self.x, self.y))
-        win.blit(self.wallImg, (self.x + 16, self.y))
+    def draw(self, WINDOW):
+        WINDOW.blit(self.wallImg, (self.x, self.y))
+        WINDOW.blit(self.wallImg, (self.x + 16, self.y))
         if self.up:
-            win.blit(self.wallImg, (self.x + 32, self.y))
-        win.blit(self.wallImg, (self.x + 48, self.y))
-        win.blit(self.wallImg, (self.x + 64, self.y))
-        win.blit(self.wallImg, (self.x + 64, self.y + 16))
+            WINDOW.blit(self.wallImg, (self.x + 32, self.y))
+        WINDOW.blit(self.wallImg, (self.x + 48, self.y))
+        WINDOW.blit(self.wallImg, (self.x + 64, self.y))
+        WINDOW.blit(self.wallImg, (self.x + 64, self.y + 16))
         if self.right:
-            win.blit(self.wallImg, (self.x + 64, self.y +32))
-        win.blit(self.wallImg, (self.x + 64, self.y + 48))
-        win.blit(self.wallImg, (self.x + 64, self.y + 64))
-        win.blit(self.wallImg, (self.x + 48, self.y + 64))
+            WINDOW.blit(self.wallImg, (self.x + 64, self.y +32))
+        WINDOW.blit(self.wallImg, (self.x + 64, self.y + 48))
+        WINDOW.blit(self.wallImg, (self.x + 64, self.y + 64))
+        WINDOW.blit(self.wallImg, (self.x + 48, self.y + 64))
         if self.down:
-            win.blit(self.wallImg, (self.x + 32, self.y + 64))
-        win.blit(self.wallImg, (self.x +16, self.y + 64))
-        win.blit(self.wallImg, (self.x, self.y + 64))
-        win.blit(self.wallImg, (self.x, self.y + 48))
+            WINDOW.blit(self.wallImg, (self.x + 32, self.y + 64))
+        WINDOW.blit(self.wallImg, (self.x +16, self.y + 64))
+        WINDOW.blit(self.wallImg, (self.x, self.y + 64))
+        WINDOW.blit(self.wallImg, (self.x, self.y + 48))
         if self.left:
-            win.blit(self.wallImg, (self.x, self.y + 32))
-        win.blit(self.wallImg, (self.x, self.y + 16))
+            WINDOW.blit(self.wallImg, (self.x, self.y + 32))
+        WINDOW.blit(self.wallImg, (self.x, self.y + 16))
 
-class Exit(object):
+class Item(object):
     def __init__(self, pos):
         self.x = pos[0]
         self.y = pos[1]
-        self.originalImg = pygame.image.load('assets/ladder.png').convert()
-        originalImg_rect = pygame.Rect(0, 0, 16, 16)
+        self.hitbox = (self.x, self.y, EXIT_SIZE, EXIT_SIZE)
+
+    def draw(self, WINDOW):
+        pass
+
+class Torch(Item):
+    def draw(self, WINDOW):
+        originalImg = pygame.image.load('assets/torch.png').convert()
+        originalImg_rect = pygame.Rect(0, 0, 6, 16)
         image = pygame.Surface(originalImg_rect.size).convert()
-        image.blit(self.originalImg, (0, 0), originalImg_rect)
+        image.blit(originalImg, (0, 0), originalImg_rect)
         alpha = image.get_at((0, 0))
         image.set_colorkey(alpha)
-        self.exitImg = image
-        self.hitbox = (self.x, self.y, EXIT_SIZE, EXIT_SIZE)
-        self.endImg = pygame.image.load('assets/coin1.png').convert()
-    
-    def draw(self, win):
-        win.blit(self.exitImg, (self.x, self.y))
-    
-    def drawEnd(self,win):
-        win.blit(self.endImg, (self.x, self.y))
-    
+        exitImg = image
+        WINDOW.blit(exitImg, (self.x, self.y))
+
+class Compass(Item):
+    def draw(self, WINDOW):
+        originalImg = pygame.image.load('assets/compass.png').convert()
+        originalImg_rect = pygame.Rect(0, 0, 16, 16)
+        image = pygame.Surface(originalImg_rect.size).convert()
+        image.blit(originalImg, (0, 0), originalImg_rect)
+        alpha = image.get_at((0, 0))
+        image.set_colorkey(alpha)
+        exitImg = image
+        WINDOW.blit(exitImg, (self.x, self.y))
+
+class Exit(Item):
+    def draw(self, WINDOW):
+        originalImg = pygame.image.load('assets/ladder.png').convert()
+        originalImg_rect = pygame.Rect(0, 0, 16, 16)
+        image = pygame.Surface(originalImg_rect.size).convert()
+        image.blit(originalImg, (0, 0), originalImg_rect)
+        alpha = image.get_at((0, 0))
+        image.set_colorkey(alpha)
+        exitImg = image
+        WINDOW.blit(exitImg, (self.x, self.y))
+
+class Coin(Item):
+    def draw(self, WINDOW):
+        originalImg = pygame.image.load('assets/coin1.png').convert()
+        originalImg_rect = pygame.Rect(0, 0, 16, 16)
+        image = pygame.Surface(originalImg_rect.size).convert()
+        image.blit(originalImg, (0, 0), originalImg_rect)
+        alpha = image.get_at((0, 0))
+        image.set_colorkey(alpha)
+        exitImg = image
+        WINDOW.blit(exitImg, (self.x, self.y))
+
 class Data(object):
     def __init__(self):
         self.rooms = []
         self.roomsStr = []
 
-    def Add(self, object):
-        self.rooms.append(object)
-    
+    def Add(self, room_id):
+        self.rooms.append(room_id)
+
     def AddString(self, string):
         self.roomsStr.append(string)

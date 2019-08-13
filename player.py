@@ -32,8 +32,8 @@ class Player(object):
         self.walk_up = [pygame.image.load('assets/up01.png'), pygame.image.load('assets/up11.png'), pygame.image.load('assets/up21.png')]
         self.walk_down = [pygame.image.load('assets/down01.png'), pygame.image.load('assets/down11.png'), pygame.image.load('assets/down21.png')]
 
-    def draw(self, win):
-        #win.blit(self.player_img, (self.x - 1319, self.y - 708))
+    def draw(self, WINDOW):
+        #WINDOW.blit(self.player_img, (self.x - 1319, self.y - 708))
         if self.walk_count > 14:
             self.walk_count = 0
         spritesheet = pygame.image.load('assets/up01.png')
@@ -51,11 +51,11 @@ class Player(object):
         alpha = image.get_at((0, 0))
         image.set_colorkey(alpha)
         self.player_img = image
-        win.blit(self.player_img, (self.x, self.y))
+        WINDOW.blit(self.player_img, (self.x, self.y))
         self.hitbox = (self.x, self.y, 16, 16)
 
     def move(self, dx, dy):
-        self.walk_count += 3
+        self.walk_count += 1
         self.x -= dx
         self.y -= dy
         if (self.x > self.exit.x + 16 or self.exit.x > self.x + 16) or (self.y > self.exit.y + 16 or self.exit.y > self.y + 16):
@@ -66,7 +66,6 @@ class Player(object):
     def CheckForCollision(self, dx, dy):
         col = (self.x - 14) // 64
         row = (self.y - 14) // 64
-
         i = self.data.roomsStr.index('Room(' + str(row) + ',' + str(col) + ')')
         if self.x > 16 + 64 * col and self.x < 48 + 64 * col and self.y > 16 + 64 * row and self.y < 48 + 64 * row:
             self.collision = False
@@ -96,4 +95,3 @@ class Player(object):
             if self.x > 16 + 64 * col and self.x < 48 + 64 * col and self.y > 16 + 64 * row and self.y < 48 + 64 * row:    
                 self.maze.FillMaze()
                 self.maze.ScrambleMaze()
-                print("hi")

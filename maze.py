@@ -58,7 +58,7 @@ class Maze(object):
     def BuildGrid(self):
         for row in range(self.map_width):
             for col in range(self.map_length):
-                self.grid.append([row,col])
+                self.grid.append([row, col])
 
     def ScrambleMaze(self):
             x = y = 0
