@@ -143,11 +143,6 @@ class Game(object):
         self.maze.MazeSkeleton(0,0)
         self.maze.FillMaze()
         self.maze.ScrambleMaze()
-        randomlist = list(range(0, 16))
-        random.shuffle(randomlist)
-        pygame.mixer_music.load(MUSIC_LIST[randomlist.pop()])
-        pygame.mixer_music.set_volume(0.5)
-        pygame.mixer_music.play(-1)
         if self.level == 2:
             side = (self.level + 1) * 4
             self.compass = items.Compass([32 + 64 * random.randint(0, side - 1)
@@ -156,6 +151,11 @@ class Game(object):
             self.time += 1
             CLOCK.tick(60)
             for event in pygame.event.get():
+                if not pygame.mixer_music.get_busy():
+                    filename = random.choice(MUSIC_LIST)
+                    pygame.mixer_music.load(filename)
+                    print(filename)
+                    pygame.mixer_music.play(0)
                 if event.type == pygame.QUIT:
                     self.run = False
             keys = pygame.key.get_pressed()
@@ -186,7 +186,7 @@ class Game(object):
             if keys[pygame.K_q]:
                 self.run = False
             WINDOW.fill((0, 0, 0))
-            if self.time // 5 == 1:
+            if self.time // 10 == 1:
                 self.time = 0
                 self.light_radius -= 1
             self.fog.fill((20, 20, 20))
