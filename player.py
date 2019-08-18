@@ -12,6 +12,8 @@ class Player(object):
         self.up = False
         self.down = False
         self.exit = exit
+        self.row = 0
+        self.col = 0
         self.x = x
         self.y = y
         self.width = PLAYER_WIDTH
@@ -82,16 +84,8 @@ class Player(object):
         if self.collision:
             self.x += dx
             self.y += dy
-
-    def checkForSteps(self, dx, dy):
-        if not self.collision:
-            self.triggerX += dx
-            self.triggerY += dy
-        if not self.collision and abs(self.triggerX) + abs(self.triggerY) > (16 * 16):
-            self.triggerX = 0
-            self.triggerY = 0
-            col = (self.x - 16) // 64
-            row = (self.y - 16) // 64
-            if self.x > 16 + 64 * col and self.x < 48 + 64 * col and self.y > 16 + 64 * row and self.y < 48 + 64 * row:    
-                self.maze.FillMaze()
-                self.maze.ScrambleMaze()
+        if self.x > 16 + 64 * col and self.x < 48 + 64 * col and self.y > 16 + 64 * row and self.y < 48 + 64 * row and abs(self.col - col) + abs(self.row - row) > 3:
+            self.row = row
+            self.col = col
+            self.maze.FillMaze()
+            self.maze.ScrambleMaze()

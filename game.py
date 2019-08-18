@@ -86,7 +86,7 @@ class Game(object):
             torch = items.Torch([32 + (64 * 4) + 64 * k, 32 + 64 * k])
             self.torches.append(torch)
 
-    def redrawGameWindow(self):
+    def redrawGameWindowForMulti(self):
         WINDOW.blit(BACKGROUND, [0, 0])
         for room in self.data.rooms:
             room.draw(WINDOW)
@@ -124,7 +124,7 @@ class Game(object):
         self.item.draw(WINDOW)
         for torch in self.torches:
             torch.draw(WINDOW)
-        if self.level == 2 and self.compass is not None:
+        if (self.level == 2 or self.level == 3) and self.compass is not None:
             self.compass.draw(WINDOW)
         self.player.draw(WINDOW)
         self.render_fog()
@@ -149,16 +149,15 @@ class Game(object):
 
     def update(self, x, y):
         self.player.move(x, y)
-        if self.level == 2 and self.compass is not None:
+        if (self.level == 2 or self.level == 3) and self.compass is not None:
             if (self.player.x > self.compass.x + 16 or self.compass.x > self.player.x + 16) or (self.player.y > self.compass.y + 16 or self.compass.y > self.player.y + 16):
                 pass
             else:
                 self.compass = None
                 self.compass_switch = True
         self.player.CheckForCollision(x, y)
-        self.player.checkForSteps(x, y)
 
-    def increaseLevelSingle(self):
+    def increaseLevelForSingle(self):
         self.level += 1
         if self.level == 4:
             self.endStart()
@@ -170,17 +169,13 @@ class Game(object):
         if self.level == 3:
             self.item = items.Coin([32 + 64 * random.randint(0, side - 1), 32 + 64 * random.randint(0, lside - 1)])
             self.player = player.Player(32, 32, self.data, self.maze, self.item)
-        self.startSingle()
+        self.startForSingle()
 
-    def start(self):
+    def startForMulti(self):
         self.spawn_torchesMulti()
         self.maze.MazeSkeleton(0,0)
         self.maze.FillMaze()
         self.maze.ScrambleMaze()
-        if self.level == 2 or self.level == 3:
-            side = (self.level + 1) * 4
-            self.compass = items.Compass([32 + 64 * random.randint(0, side - 1)
-                                          , 32 + 64 * random.randint(0, 8 - 1)])
         while self.run:
             self.time += 1
             CLOCK.tick(60)
@@ -246,9 +241,9 @@ class Game(object):
                 self.player.x = 32
                 self.player.y = 32
             WINDOW.fill((0, 0, 0))
-            self.redrawGameWindow()
+            self.redrawGameWindowForMulti()
 
-    def startSingle(self):
+    def startForSingle(self):
         self.spawn_torches()
         self.maze.MazeSkeleton(0,0)
         self.maze.FillMaze()
@@ -258,10 +253,10 @@ class Game(object):
         pygame.mixer_music.load(MUSIC_LIST[randomlist.pop()])
         pygame.mixer_music.set_volume(0.5)
         pygame.mixer_music.play(-1)
-        if self.level == 2:
+        if self.level == 2 or self.level == 3:
             side = (self.level + 1) * 4
-            self.compass = items.Compass([32 + 64 * random.randint(0, side - 1)
-                                          , 32 + 64 * random.randint(0, 8 - 1)])
+            self.compass = items.Compass([32 + 64 * random.randint(0, 4 - 1)
+                                          , 32 + 64 * random.randint(0, 4 - 1)])
         while self.run:
             self.time += 1
             CLOCK.tick(60)
@@ -312,7 +307,7 @@ class Game(object):
             self.light_mask = pygame.transform.scale(self.light_mask, (self.light_radius, self.light_radius))
             self.light_rect = self.light_mask.get_rect()
             if self.player.end:
-                self.increaseLevelSingle()
+                self.increaseLevelForSingle()
             WINDOW.fill((0, 0, 0))
             self.redrawGameWindowSingle()
 
@@ -387,7 +382,7 @@ class Game(object):
             if 450 < x < 815 and 400 < y < 494:
                 pygame.draw.rect(WINDOW, (255, 0, 0), (450, 400, 365, 94), 2)
             if 450 < x < 815 and 200 < y < 294 and mouse == 1:
-                self.startSingle()
+                self.startForSingle()
                 menu = False
             if 450 < x < 815 and 300 < y < 394 and mouse == 1:
                 try:
@@ -396,7 +391,7 @@ class Game(object):
                     self.item = items.Coin(
                         [32 + 64 * (self.map_length - 1), 32 + 64 * (self.map_width - 1)])
                     self.player = player.Player(32, 32, self.data, self.maze, self.item)
-                    self.start()
+                    self.startForMulti()
                     menu = False
                 except:
                     my_font = pygame.font.SysFont('Comic Sans MS', 30)
