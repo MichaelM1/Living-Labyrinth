@@ -6,7 +6,6 @@ import maze
 import player
 from network import Network
 
-
 pygame.init()
 pygame.font.init()
 pygame.mixer.init()
@@ -19,11 +18,11 @@ START_BUTTON = pygame.image.load('assets/start.PNG').convert()
 END_SCREEN = pygame.image.load('assets/end.jpg').convert()
 
 MUSIC_LIST = ['Sound/Aria Math.mp3', 'Sound/Beginning 2.mp3', 'Sound/Clark.mp3'
-              , 'Sound/Danny.mp3', 'Sound/Dreiton.mp3', 'Sound/Dry Hands.mp3'
-              , 'Sound/Haggstrom.mp3', 'Sound/Haunt Muskie.mp3', 'Sound/Living Mice.mp3'
-              , 'Sound/Mice On Venus.mp3', 'Sound/Moog City 2.mp3', 'Sound/Mutation.mp3'
-              , 'Sound/Subwoofer Lullaby.mp3', 'Sound/Sweden.mp3', 'Sound/Taswell.mp3'
-              , 'Sound/Wet Hands.mp3']
+    , 'Sound/Danny.mp3', 'Sound/Dreiton.mp3', 'Sound/Dry Hands.mp3'
+    , 'Sound/Haggstrom.mp3', 'Sound/Haunt Muskie.mp3', 'Sound/Living Mice.mp3'
+    , 'Sound/Mice On Venus.mp3', 'Sound/Moog City 2.mp3', 'Sound/Mutation.mp3'
+    , 'Sound/Subwoofer Lullaby.mp3', 'Sound/Sweden.mp3', 'Sound/Taswell.mp3'
+    , 'Sound/Wet Hands.mp3']
 
 
 class Game(object):
@@ -103,13 +102,13 @@ class Game(object):
             if disx == 0:
                 disx = 1
             disy = self.item.y - self.player.y
-            radian = math.atan(disy/disx)
-            degree = -(radian * (180/math.pi))
+            radian = math.atan(disy / disx)
+            degree = -(radian * (180 / math.pi))
             if disx < 0 and disy > 0:
                 degree = -180 + degree
             if disx < 0 and disy < 0:
                 degree = 180 + degree
-            degree = degree * (math.pi/180)
+            degree = degree * (math.pi / 180)
             x1 = math.cos(degree) * 40
             y1 = math.sin(degree) * -40
             pygame.draw.circle(WINDOW, (105, 105, 105), (1000, 500), 50)
@@ -133,13 +132,13 @@ class Game(object):
             if disx == 0:
                 disx = 1
             disy = self.item.y - self.player.y
-            radian = math.atan(disy/disx)
-            degree = -(radian * (180/math.pi))
+            radian = math.atan(disy / disx)
+            degree = -(radian * (180 / math.pi))
             if disx < 0 and disy > 0:
                 degree = -180 + degree
             if disx < 0 and disy < 0:
                 degree = 180 + degree
-            degree = degree * (math.pi/180)
+            degree = degree * (math.pi / 180)
             x1 = math.cos(degree) * 40
             y1 = math.sin(degree) * -40
             pygame.draw.circle(WINDOW, (105, 105, 105), (1000, 500), 50)
@@ -150,7 +149,8 @@ class Game(object):
     def update(self, x, y):
         self.player.move(x, y)
         if (self.level == 2 or self.level == 3) and self.compass is not None:
-            if (self.player.x > self.compass.x + 16 or self.compass.x > self.player.x + 16) or (self.player.y > self.compass.y + 16 or self.compass.y > self.player.y + 16):
+            if (self.player.x > self.compass.x + 16 or self.compass.x > self.player.x + 16) or (
+                    self.player.y > self.compass.y + 16 or self.compass.y > self.player.y + 16):
                 pass
             else:
                 self.compass = None
@@ -173,7 +173,7 @@ class Game(object):
 
     def startForMulti(self):
         self.spawn_torchesMulti()
-        self.maze.MazeSkeleton(0,0)
+        self.maze.MazeSkeleton(0, 0)
         self.maze.FillMaze()
         self.maze.ScrambleMaze()
         while self.run:
@@ -219,7 +219,7 @@ class Game(object):
                 = s[0:7]
             for torch in self.torches:
                 if (self.player.x <= torch.x + 6 and torch.x <= self.player.x + 16 and self.player.y <= torch.y + 16 and \
-                    torch.y <= self.player.y + 16):
+                        torch.y <= self.player.y + 16):
                     self.torches.remove(torch)
                     self.light_radius += 150
             for torch in self.torches:
@@ -245,7 +245,7 @@ class Game(object):
 
     def startForSingle(self):
         self.spawn_torches()
-        self.maze.MazeSkeleton(0,0)
+        self.maze.MazeSkeleton(0, 0)
         self.maze.FillMaze()
         self.maze.ScrambleMaze()
         randomlist = list(range(0, 16))
@@ -256,7 +256,7 @@ class Game(object):
         if self.level == 2 or self.level == 3:
             side = (self.level + 1) * 4
             self.compass = items.Compass([32 + 64 * random.randint(0, 4 - 1)
-                                          , 32 + 64 * random.randint(0, 4 - 1)])
+                                             , 32 + 64 * random.randint(0, 4 - 1)])
         while self.run:
             self.time += 1
             CLOCK.tick(60)
@@ -292,7 +292,7 @@ class Game(object):
                 self.run = False
             for torch in self.torches:
                 if (self.player.x > torch.x + 6 or torch.x > self.player.x + 16 or self.player.y > torch.y + 16 or \
-                    torch.y > self.player.y + 16):
+                        torch.y > self.player.y + 16):
                     pass
                 else:
                     self.torches.remove(torch)
@@ -313,7 +313,8 @@ class Game(object):
 
     def send_data(self):
         data = str(self.net.id) + ":" + str(self.player.x) + "," + str(self.player.y) + "," + str(self.player.left) \
-               + "," + str(self.player.right) + "," + str(self.player.up) + "," + str(self.player.down) + "," + str(self.player.walk_count)
+               + "," + str(self.player.right) + "," + str(self.player.up) + "," + str(self.player.down) + "," + str(
+            self.player.walk_count)
         for torch in self.torches:
             data += "," + str(torch.x) + "," + str(torch.y)
         reply = self.net.send(data)
@@ -351,7 +352,6 @@ class Game(object):
             return d
         except:
             return 0, 0, False, False, False, False, 0
-
 
     def menuStart(self):
         menu = True

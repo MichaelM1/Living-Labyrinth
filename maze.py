@@ -1,6 +1,7 @@
 import random
 import items
 
+
 class Maze(object):
     def __init__(self, data, map_width, map_length):
         self.grid = []
@@ -61,46 +62,46 @@ class Maze(object):
                 self.grid.append([row, col])
 
     def ScrambleMaze(self):
-            x = y = 0
-            self.BuildGrid()
-            self.stack.append([x, y])
-            self.visited.append([x, y])
-            while self.stack != []:
-                cell = []
-                if [x, y + 1] not in self.visited and [x, y + 1] in self.grid:
-                    cell.append(1)
-                if [x, y - 1] not in self.visited and [x, y - 1] in self.grid:
-                    cell.append(2)
-                if [x + 1, y] not in self.visited and [x + 1, y] in self.grid:
-                    cell.append(3)
-                if [x - 1, y] not in self.visited and [x - 1, y] in self.grid:
-                    cell.append(4)
-                if cell != []:
-                    cell_chosen = (random.choice(cell))
-                    if cell_chosen == 1:
-                        self.Right([x, y])
-                        y = y + 1
-                        self.visited.append([x, y])
-                        self.stack.append([x, y])
-                    elif cell_chosen == 2:
-                        self.Left([x, y])
-                        y = y - 1
-                        self.visited.append([x, y])
-                        self.stack.append([x, y])
-                    elif cell_chosen == 3:
-                        self.Down([x, y])
-                        x = x + 1
-                        self.visited.append([x, y])
-                        self.stack.append([x, y])
-                    elif cell_chosen == 4:
-                        self.Up([x, y])
-                        x = x - 1
-                        self.visited.append([x, y])
-                        self.stack.append([x, y])
-                else:
-                    j = self.stack.pop()
-                    x = j[0]
-                    y = j[1]
-            self.stack.clear()
-            self.visited.clear()
-            self.grid.clear()
+        x = y = 0
+        self.BuildGrid()
+        self.stack.append([x, y])
+        self.visited.append([x, y])
+        while self.stack != []:
+            cell = []
+            if [x, y + 1] not in self.visited and [x, y + 1] in self.grid:
+                cell.append(1)
+            if [x, y - 1] not in self.visited and [x, y - 1] in self.grid:
+                cell.append(2)
+            if [x + 1, y] not in self.visited and [x + 1, y] in self.grid:
+                cell.append(3)
+            if [x - 1, y] not in self.visited and [x - 1, y] in self.grid:
+                cell.append(4)
+            if cell != []:
+                cell_chosen = (random.choice(cell))
+                if cell_chosen == 1:
+                    self.Right([x, y])
+                    y = y + 1
+                    self.visited.append([x, y])
+                    self.stack.append([x, y])
+                elif cell_chosen == 2:
+                    self.Left([x, y])
+                    y = y - 1
+                    self.visited.append([x, y])
+                    self.stack.append([x, y])
+                elif cell_chosen == 3:
+                    self.Down([x, y])
+                    x = x + 1
+                    self.visited.append([x, y])
+                    self.stack.append([x, y])
+                elif cell_chosen == 4:
+                    self.Up([x, y])
+                    x = x - 1
+                    self.visited.append([x, y])
+                    self.stack.append([x, y])
+            else:
+                j = self.stack.pop()
+                x = j[0]
+                y = j[1]
+        self.stack.clear()
+        self.visited.clear()
+        self.grid.clear()

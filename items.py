@@ -4,6 +4,7 @@ HITBOX_LEEWAY = 3
 WALL_SIZE = 16
 EXIT_SIZE = 16
 
+
 class Room(object):
     def __init__(self, pos, x, y):
         self.row = pos[0]
@@ -17,7 +18,7 @@ class Room(object):
         self.wallImg = pygame.image.load('assets/walls.png')
 
     def __str__(self):
-        return "Room("+ str(self.row)+","+ str(self.col)+")"
+        return "Room(" + str(self.row) + "," + str(self.col) + ")"
 
     def draw(self, WINDOW):
         WINDOW.blit(self.wallImg, (self.x, self.y))
@@ -28,18 +29,19 @@ class Room(object):
         WINDOW.blit(self.wallImg, (self.x + 64, self.y))
         WINDOW.blit(self.wallImg, (self.x + 64, self.y + 16))
         if self.right:
-            WINDOW.blit(self.wallImg, (self.x + 64, self.y +32))
+            WINDOW.blit(self.wallImg, (self.x + 64, self.y + 32))
         WINDOW.blit(self.wallImg, (self.x + 64, self.y + 48))
         WINDOW.blit(self.wallImg, (self.x + 64, self.y + 64))
         WINDOW.blit(self.wallImg, (self.x + 48, self.y + 64))
         if self.down:
             WINDOW.blit(self.wallImg, (self.x + 32, self.y + 64))
-        WINDOW.blit(self.wallImg, (self.x +16, self.y + 64))
+        WINDOW.blit(self.wallImg, (self.x + 16, self.y + 64))
         WINDOW.blit(self.wallImg, (self.x, self.y + 64))
         WINDOW.blit(self.wallImg, (self.x, self.y + 48))
         if self.left:
             WINDOW.blit(self.wallImg, (self.x, self.y + 32))
         WINDOW.blit(self.wallImg, (self.x, self.y + 16))
+
 
 class Item(object):
     def __init__(self, pos):
@@ -49,6 +51,7 @@ class Item(object):
 
     def draw(self, WINDOW):
         pass
+
 
 class Torch(Item):
     def draw(self, WINDOW):
@@ -61,6 +64,7 @@ class Torch(Item):
         exitImg = image
         WINDOW.blit(exitImg, (self.x, self.y))
 
+
 class Compass(Item):
     def draw(self, WINDOW):
         originalImg = pygame.image.load('assets/compass.png').convert()
@@ -71,6 +75,7 @@ class Compass(Item):
         image.set_colorkey(alpha)
         exitImg = image
         WINDOW.blit(exitImg, (self.x, self.y))
+
 
 class Exit(Item):
     def draw(self, WINDOW):
@@ -83,6 +88,7 @@ class Exit(Item):
         exitImg = image
         WINDOW.blit(exitImg, (self.x, self.y))
 
+
 class Coin(Item):
     def draw(self, WINDOW):
         originalImg = pygame.image.load('assets/coin1.png').convert()
@@ -93,6 +99,7 @@ class Coin(Item):
         image.set_colorkey(alpha)
         exitImg = image
         WINDOW.blit(exitImg, (self.x, self.y))
+
 
 class Data(object):
     def __init__(self):
