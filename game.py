@@ -16,6 +16,7 @@ BACKGROUND = pygame.image.load('assets/background.jpg').convert()
 MENU_SCREEN = pygame.image.load('assets/menuScreen.png').convert()
 START_BUTTON = pygame.image.load('assets/start.PNG').convert()
 END_SCREEN = pygame.image.load('assets/end.jpg').convert()
+WIN_SCREEN = pygame.image.load('assets/end2.jpg').convert()
 
 MUSIC_LIST = ['Sound/Aria Math.mp3', 'Sound/Beginning 2.mp3', 'Sound/Clark.mp3'
     , 'Sound/Danny.mp3', 'Sound/Dreiton.mp3', 'Sound/Dry Hands.mp3'
@@ -46,6 +47,19 @@ class Game(object):
         self.connected = False
 
     def endStart(self):
+        end = True
+        while end:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    end = False
+                keys = pygame.key.get_pressed()
+                if keys[pygame.K_q]:
+                    end = False
+            WINDOW.fill((0, 0, 0))
+            WINDOW.blit(WIN_SCREEN, [0, 0])
+            pygame.display.flip()
+
+    def gameOver(self):
         end = True
         while end:
             for event in pygame.event.get():
@@ -231,7 +245,7 @@ class Game(object):
                 self.time = 0
                 self.light_radius -= 1
                 if self.light_radius == 0:
-                    self.endStart()
+                    self.gameOver()
             self.fog.fill((20, 20, 20))
             self.light_mask = pygame.image.load(('assets/light_mask.png')).convert_alpha()
             self.light_mask = pygame.transform.scale(self.light_mask, (self.light_radius, self.light_radius))
@@ -301,7 +315,7 @@ class Game(object):
                 self.time = 0
                 self.light_radius -= 1
                 if self.light_radius == 0:
-                    self.endStart()
+                    self.gameOver()
             self.fog.fill((20, 20, 20))
             self.light_mask = pygame.image.load(('assets/light_mask.png')).convert_alpha()
             self.light_mask = pygame.transform.scale(self.light_mask, (self.light_radius, self.light_radius))
