@@ -71,29 +71,26 @@ class Player(object):
         else:
             self.end = True
 
-    def CheckForCollision(self, dx, dy):
+    def checkForCollision(self, dx, dy):
         col = (self.x - 14) // 64
         row = (self.y - 14) // 64
         i = self.data.roomsStr.index('Room(' + str(row) + ',' + str(col) + ')')
-        if self.x > 16 + 64 * col and self.x < 48 + 64 * col and self.y > 16 + 64 * row and self.y < 48 + 64 * row:
+        if 16 + 64 * col < self.x < 48 + 64 * col and 16 + 64 * row < self.y < 48 + 64 * row:
             self.collision = False
-        elif not self.data.rooms[
-            i].right and self.x > 45 + 64 * col and self.y > 30 + 64 * row and self.y < 35 + 64 * row:
+        elif not self.data.rooms[i].right and self.x > 45 + 64 * col and 30 + 64 * row < self.y < 35 + 64 * row:
             self.collision = False
-        elif not self.data.rooms[
-            i].down and self.x > 30 + 64 * col and self.x < 35 + 64 * col and self.y > 45 + 64 * row:
+        elif not self.data.rooms[i].down and 30 + 64 * col < self.x < 35 + 64 * col and self.y > 45 + 64 * row:
             self.collision = False
-        elif not self.data.rooms[
-            i].left and self.x < 19 + 64 * col and self.y > 30 + 64 * row and self.y < 35 + 64 * row:
+        elif not self.data.rooms[i].left and self.x < 19 + 64 * col and 30 + 64 * row < self.y < 35 + 64 * row:
             self.collision = False
-        elif not self.data.rooms[i].up and self.x > 30 + 64 * col and self.x < 35 + 64 * col and self.y < 19 + 64 * row:
+        elif not self.data.rooms[i].up and 30 + 64 * col < self.x < 35 + 64 * col and self.y < 19 + 64 * row:
             self.collision = False
         else:
             self.collision = True
         if self.collision:
             self.x += dx
             self.y += dy
-        if self.x > 16 + 64 * col and self.x < 48 + 64 * col and self.y > 16 + 64 * row and self.y < 48 + 64 * row and abs(
+        if 16 + 64 * col < self.x < 48 + 64 * col and 16 + 64 * row < self.y < 48 + 64 * row and abs(
                 self.col - col) + abs(self.row - row) > 3:
             self.row = row
             self.col = col

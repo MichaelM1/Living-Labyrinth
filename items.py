@@ -64,6 +64,16 @@ class Torch(Item):
         exitImg = image
         WINDOW.blit(exitImg, (self.x, self.y))
 
+class Boots(Item):
+    def draw(self, WINDOW):
+        originalImg = pygame.image.load('assets/boots.png').convert()
+        originalImg_rect = pygame.Rect(3, 0, 12, 16)
+        image = pygame.Surface(originalImg_rect.size).convert()
+        image.blit(originalImg, (0, 0), originalImg_rect)
+        alpha = image.get_at((0, 0))
+        image.set_colorkey(alpha)
+        exitImg = image
+        WINDOW.blit(exitImg, (self.x, self.y))
 
 class Compass(Item):
     def draw(self, WINDOW):
