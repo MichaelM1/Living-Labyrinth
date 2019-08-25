@@ -4,7 +4,6 @@ import pygame
 import items
 import maze
 import player
-from network import Network
 
 pygame.init()
 pygame.font.init()
@@ -29,24 +28,25 @@ MUSIC_LIST = ['Sound/Aria Math.mp3', 'Sound/Beginning 2.mp3', 'Sound/Clark.mp3'
 
 class Game(object):
     def __init__(self, width, length, level):
-        self.net = None
         self.level = level
         self.map_width = width
         self.map_length = length
         self.data = items.Data()
         self.maze = maze.Maze(self.data, width, length)
+        self.multi = False
         self.run = True
         self.time = 0
-        self.item = items.Exit([32 + 64 * random.randint(0, length - 1), 32 + 64 * random.randint(0, width - 1)])
+        self.item = items.Exit([32 + 64 * random.randint(length//2 - 1, length//2 + 1), 32 + 64 * random.randint(width//2 - 1, width//2 + 1)])
         self.player = player.Player(32, 32, self.data, self.maze, self.item)
-        self.player2 = player.Player(32 + 64 * (width - 1), 32 + 64 * (length - 1), self.data, self.maze, self.item)
+        self.player2 = player.Player(32 + 64 * (length - 1), 32 + 64 * (width - 1), self.data, self.maze, self.item)
         self.light_radius = 250
+        self.light_radius_player2 = 250
         self.torches = []
         self.boots = []
         self.compass = None
         self.compass_switch = False
         self.fog = pygame.Surface((1296, 720))
-        self.connected = False
+        self.movespeed_player2 = 3
         self.movespeed = 3
 
     def endStart(self):
@@ -76,10 +76,12 @@ class Game(object):
             pygame.display.flip()
 
     def render_fog(self):
-        # draw the light mask (gradient) onto fog image
         self.fog.fill((0, 0, 0))
         self.light_rect.center = (self.player.x + 8, self.player.y + 8)
         self.fog.blit(self.light_mask, self.light_rect)
+        if self.multi:
+            self.light_rect2.center = (self.player2.x + 8, self.player2.y + 8)
+            self.fog.blit(self.light_mask2, self.light_rect2)
         WINDOW.blit(self.fog, (0, 0), special_flags=pygame.BLEND_MULT)
 
     def spawn_boots(self):
@@ -100,29 +102,7 @@ class Game(object):
             torch = items.Torch([32 + 64 * random.randint(0, side - 1) + 5, 32 + 64 * random.randint(0, lside - 1)])
             self.torches.append(torch)
 
-    def spawn_bootsMulti(self):
-        for i in range(1):
-            boot = items.Boots([32 + 64 * i, 32 + 64 * i])
-            self.boots.append(boot)
-        for j in range(1):
-            boot = items.Boots([32 + (64 * 2) + 64 * j, 32 + 64 * j])
-            self.boots.append(boot)
-        for k in range(1):
-            boot = items.Boots([32 + (64 * 4) + 64 * k, 32 + 64 * k])
-            self.boots.append(boot)
-
-    def spawn_torchesMulti(self):
-        for i in range(1, 7):
-            torch = items.Torch([32 + 64 * i, 32 + 64 * i])
-            self.torches.append(torch)
-        for j in range(1, 7):
-            torch = items.Torch([32 + (64 * 2) + 64 * j, 32 + 64 * j])
-            self.torches.append(torch)
-        for k in range(1, 7):
-            torch = items.Torch([32 + (64 * 4) + 64 * k, 32 + 64 * k])
-            self.torches.append(torch)
-
-    def redrawGameWindowForMulti(self):
+    def redrawGameWindowMulti(self):
         WINDOW.blit(BACKGROUND, [0, 0])
         for room in self.data.rooms:
             room.draw(WINDOW)
@@ -131,7 +111,7 @@ class Game(object):
             boot.draw(WINDOW)
         for torch in self.torches:
             torch.draw(WINDOW)
-        if self.level == 2 and self.compass is not None:
+        if (self.level == 2 or self.level == 3) and self.compass is not None:
             self.compass.draw(WINDOW)
         self.player.draw(WINDOW)
         self.player2.draw(WINDOW)
@@ -188,6 +168,24 @@ class Game(object):
         pygame.display.flip()
 
     def update(self, x, y):
+        col = (self.player.x - 14) // 64
+        row = (self.player.y - 14) // 64
+        if 16 + 64 * col < self.player.x < 48 + 64 * col and 16 + 64 * row < self.player.y < 48 + 64 * row and abs(
+                self.player.col - col) + abs(self.player.row - row) > 5:
+            col1 = (self.player2.x - 14) // 64
+            row1 = (self.player2.y - 14) // 64
+            if 16 + 64 * col1 < self.player2.x < 48 + 64 * col1 and 16 + 64 * row1 < self.player2.y < 48 + 64 * row1:
+                self.player.row = row
+                self.player.col = col
+                self.player.maze.FillMaze()
+                self.player.maze.ScrambleMaze()
+        for torch in self.torches:
+            if (self.player.x > torch.x + 6 or torch.x > self.player.x + 16 or self.player.y > torch.y + 16 or \
+                    torch.y > self.player.y + 16):
+                pass
+            else:
+                self.torches.remove(torch)
+                self.light_radius += 150
         self.player.move(x, y)
         if (self.level == 2 or self.level == 3) and self.compass is not None:
             if (self.player.x > self.compass.x + 16 or self.compass.x > self.player.x + 16) or (
@@ -197,6 +195,35 @@ class Game(object):
                 self.compass = None
                 self.compass_switch = True
         self.player.checkForCollision(x, y)
+
+    def update_player2(self, x, y):
+        col = (self.player2.x - 14) // 64
+        row = (self.player2.y - 14) // 64
+        if 16 + 64 * col < self.player2.x < 48 + 64 * col and 16 + 64 * row < self.player2.y < 48 + 64 * row and abs(
+                self.player2.col - col) + abs(self.player2.row - row) > 5:
+            col1 = (self.player.x - 14) // 64
+            row1 = (self.player.y - 14) // 64
+            if 16 + 64 * col1 < self.player.x < 48 + 64 * col1 and 16 + 64 * row1 < self.player.y < 48 + 64 * row1:
+                self.player2.row = row
+                self.player2.col = col
+                self.player2.maze.FillMaze()
+                self.player2.maze.ScrambleMaze()
+        for torch in self.torches:
+            if (self.player2.x > torch.x + 6 or torch.x > self.player2.x + 16 or self.player2.y > torch.y + 16 or \
+                    torch.y > self.player2.y + 16):
+                pass
+            else:
+                self.torches.remove(torch)
+                self.light_radius_player2 += 150
+        self.player2.move(x, y)
+        if (self.level == 2 or self.level == 3) and self.compass is not None:
+            if (self.player2.x > self.compass.x + 16 or self.compass.x > self.player2.x + 16) or (
+                    self.player2.y > self.compass.y + 16 or self.compass.y > self.player2.y + 16):
+                pass
+            else:
+                self.compass = None
+                self.compass_switch = True
+        self.player2.checkForCollision(x, y)
 
     def increaseLevelForSingle(self):
         self.level += 1
@@ -212,9 +239,26 @@ class Game(object):
             self.player = player.Player(32, 32, self.data, self.maze, self.item)
         self.startForSingle()
 
-    def startForMulti(self):
-        self.spawn_torchesMulti()
-        self.spawn_bootsMulti()
+    def increaseLevelForMulti(self):
+        self.level += 1
+        if self.level == 4:
+            self.endStart()
+        side = (self.level + 1) * 4
+        lside = (self.level + 1) * 4
+        if self.level > 1:
+            lside = 8
+        self.__init__(lside, side, self.level)
+        self.multi = True
+        if self.level == 3:
+            self.item = items.Coin([32 + 64 * random.randint(0, side - 1), 32 + 64 * random.randint(0, lside - 1)])
+            self.player = player.Player(32, 32, self.data, self.maze, self.item)
+            self.player2 = player.Player(32 + 64 * (self.map_length - 1), 32 + 64 * (self.map_width - 1), self.data, self.maze, self.item)
+        self.start_multi()
+
+    def startForSingle(self):
+        global justplayed
+        self.spawn_torches()
+        self.spawn_boots()
         self.maze.MazeSkeleton(0, 0)
         self.maze.FillMaze()
         self.maze.ScrambleMaze()
@@ -259,27 +303,9 @@ class Game(object):
                 self.player.down = True
             if keys[pygame.K_q]:
                 self.run = False
-            s = self.parse_data(self.send_data())
-            self.player2.x, self.player2.y, self.player2.left, self.player2.right, self.player2.up, self.player2.down, \
-                self.player2.walk_count = s[0:7]
-            for torch in self.torches:
-                if (self.player.x <= torch.x + 6 and torch.x <= self.player.x + 16 and self.player.y <= torch.y + 16 and
-                        torch.y <= self.player.y + 16):
-                    self.torches.remove(torch)
-                    self.light_radius += 150
-            for torch in self.torches:
-                if (self.player2.x <= torch.x + 6 and torch.x <= self.player2.x + 16 and self.player2.y <= torch.y +
-                        16 and torch.y <= self.player2.y + 16):
-                    self.torches.remove(torch)
-                    self.light_radius += 150
             for boot in self.boots:
                 if (self.player.x <= boot.x + 16 and boot.x <= self.player.x + 16 and self.player.y <= boot.y + 16 and
                         boot.y <= self.player.y + 16):
-                    self.boots.remove(boot)
-                    self.movespeed += 1
-            for boot in self.boots:
-                if (self.player2.x <= boot.x + 16 and boot.x <= self.player2.x + 16 and self.player2.y <= boot.y + 16
-                        and boot.y <= self.player2.y + 16):
                     self.boots.remove(boot)
                     self.movespeed += 1
             if self.time // 5 == 1:
@@ -292,13 +318,12 @@ class Game(object):
             self.light_mask = pygame.transform.scale(self.light_mask, (self.light_radius, self.light_radius))
             self.light_rect = self.light_mask.get_rect()
             if self.player.end:
-                self.endStart()
-                self.player.x = 32
-                self.player.y = 32
+                self.increaseLevelForSingle()
             WINDOW.fill((0, 0, 0))
-            self.redrawGameWindowForMulti()
+            self.redrawGameWindowSingle()
 
-    def startForSingle(self):
+    def start_multi(self):
+        global justplayed
         self.spawn_torches()
         self.spawn_boots()
         self.maze.MazeSkeleton(0, 0)
@@ -329,33 +354,50 @@ class Game(object):
                 self.player.right = False
                 self.player.up = False
                 self.player.down = False
+            if keys[pygame.K_a]:
+                self.update_player2(self.movespeed_player2, 0)
+                self.player2.left = True
+                self.player2.right = False
+                self.player2.up = False
+                self.player2.down = False
             if keys[pygame.K_RIGHT]:
                 self.update(-self.movespeed, 0)
                 self.player.left = False
                 self.player.right = True
                 self.player.up = False
                 self.player.down = False
+            if keys[pygame.K_d]:
+                self.update_player2(-self.movespeed_player2, 0)
+                self.player2.left = False
+                self.player2.right = True
+                self.player2.up = False
+                self.player2.down = False
             if keys[pygame.K_UP]:
                 self.update(0, self.movespeed)
                 self.player.left = False
                 self.player.right = False
                 self.player.up = True
                 self.player.down = False
+            if keys[pygame.K_w]:
+                self.update_player2(0, self.movespeed_player2)
+                self.player2.left = False
+                self.player2.right = False
+                self.player2.up = True
+                self.player2.down = False
             if keys[pygame.K_DOWN]:
                 self.update(0, -self.movespeed)
                 self.player.left = False
                 self.player.right = False
                 self.player.up = False
                 self.player.down = True
+            if keys[pygame.K_s]:
+                self.update_player2(0, -self.movespeed_player2)
+                self.player2.left = False
+                self.player2.right = False
+                self.player2.up = False
+                self.player2.down = True
             if keys[pygame.K_q]:
                 self.run = False
-            for torch in self.torches:
-                if (self.player.x > torch.x + 6 or torch.x > self.player.x + 16 or self.player.y > torch.y + 16 or
-                        torch.y > self.player.y + 16):
-                    pass
-                else:
-                    self.torches.remove(torch)
-                    self.light_radius += 150
             for boot in self.boots:
                 if (self.player.x > boot.x + 16 or boot.x > self.player.x + 16 or self.player.y > boot.y + 16 or
                         boot.y > self.player.y + 16):
@@ -363,63 +405,30 @@ class Game(object):
                 else:
                     self.boots.remove(boot)
                     self.movespeed += 1
+                if (self.player2.x > boot.x + 16 or boot.x > self.player2.x + 16 or self.player2.y > boot.y + 16 or
+                        boot.y > self.player2.y + 16):
+                    pass
+                else:
+                    self.boots.remove(boot)
+                    self.movespeed_player2 += 1
             if self.time // 5 == 1:
                 self.time = 0
-                self.light_radius -= 1
-                if self.light_radius == 0:
+                if self.light_radius != 0:
+                    self.light_radius -= 1
+                if self.multi and self.light_radius_player2 != 0:
+                    self.light_radius_player2 -= 1
+                if self.light_radius == 0 and self.light_radius_player2 == 0:
                     self.gameOver()
             self.fog.fill((20, 20, 20))
             self.light_mask = pygame.image.load(('assets/light_mask.png')).convert_alpha()
             self.light_mask = pygame.transform.scale(self.light_mask, (self.light_radius, self.light_radius))
+            self.light_mask2 = pygame.transform.scale(self.light_mask, (self.light_radius_player2, self.light_radius_player2))
             self.light_rect = self.light_mask.get_rect()
-            if self.player.end:
-                self.increaseLevelForSingle()
+            self.light_rect2 = self.light_mask2.get_rect()
+            if self.player.end or self.player2.end:
+                self.increaseLevelForMulti()
             WINDOW.fill((0, 0, 0))
-            self.redrawGameWindowSingle()
-
-    def send_data(self):
-        data = str(self.net.id) + ":" + str(self.player.x) + "," + str(self.player.y) + "," + str(self.player.left) \
-               + "," + str(self.player.right) + "," + str(self.player.up) + "," + str(self.player.down) + "," + str(
-            self.player.walk_count)
-        for torch in self.torches:
-            data += "," + str(torch.x) + "," + str(torch.y)
-        for boot in self.boots:
-            data += "," + str(boot.x) + "," + str(boot.y)
-        reply = self.net.send(data)
-        return reply
-
-    def parse_data(self, data):
-        try:
-            d = data.split(":")[1].split(",")
-            d[0] = int(d[0])
-            d[6] = int(d[6])
-            d[1] = int(d[1])
-            if d[2] == "False":
-                d[2] = False
-            elif d[2] == "True":
-                d[2] = True
-            if d[3] == "False":
-                d[3] = False
-            elif d[3] == "True":
-                d[3] = True
-            if d[4] == "False":
-                d[4] = False
-            elif d[4] == "True":
-                d[4] = True
-            if d[5] == "False":
-                d[5] = False
-            elif d[5] == "True":
-                d[5] = True
-            for i in range(7, len(d)):
-                if d[i] == "False":
-                    d[i] = False
-                elif d[i] == "True":
-                    d[i] = True
-                else:
-                    d[i] = int(d[i])
-            return d
-        except:
-            return 0, 0, False, False, False, False, 0
+            self.redrawGameWindowMulti()
 
     def menuStart(self):
         menu = True
@@ -453,18 +462,9 @@ class Game(object):
                 self.startForSingle()
                 menu = False
             if 450 < x < 815 and 300 < y < 394 and mouse == 1:
-                try:
-                    self.__init__(8, 12, 0)
-                    self.net = Network()
-                    self.item = items.Coin(
-                        [32 + 64 * (self.map_length - 1), 32 + 64 * (self.map_width - 1)])
-                    self.player = player.Player(32, 32, self.data, self.maze, self.item)
-                    self.startForMulti()
-                    menu = False
-                except:
-                    my_font = pygame.font.SysFont('Comic Sans MS', 30)
-                    text = my_font.render('Connection Not Found', True, (255, 0, 0))
-                    WINDOW.blit(text, (500, 500))
+                self.multi = True
+                self.start_multi()
+                menu = False
             if 450 < x < 815 and 400 < y < 494 and mouse == 1:
                 menu = False
             pygame.display.flip()

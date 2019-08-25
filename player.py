@@ -19,15 +19,11 @@ class Player(object):
         self.y = y
         self.width = PLAYER_WIDTH
         self.height = PLAYER_HEIGHT
-        self.triggerX = 0
-        self.triggerY = 0
         self.player_img = pygame.image.load('assets/player.png').convert()
         self.player_img_rect = self.player_img.get_rect()
         self.data = data
         self.maze = maze
         self.collision = False
-        self.stepsX = 0
-        self.stepsY = 0
         self.end = False
         self.walk_count = 0
         self.walk_right = [pygame.image.load('assets/right01.png'), pygame.image.load('assets/right11.png'),
@@ -40,7 +36,6 @@ class Player(object):
                           pygame.image.load('assets/down21.png')]
 
     def draw(self, WINDOW):
-        # WINDOW.blit(self.player_img, (self.x - 1319, self.y - 708))
         if self.walk_count > 14:
             self.walk_count = 0
         spritesheet = pygame.image.load('assets/up01.png')
@@ -90,9 +85,3 @@ class Player(object):
         if self.collision:
             self.x += dx
             self.y += dy
-        if 16 + 64 * col < self.x < 48 + 64 * col and 16 + 64 * row < self.y < 48 + 64 * row and abs(
-                self.col - col) + abs(self.row - row) > 3:
-            self.row = row
-            self.col = col
-            self.maze.FillMaze()
-            self.maze.ScrambleMaze()
