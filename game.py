@@ -9,6 +9,7 @@ from network import Network
 pygame.init()
 pygame.font.init()
 pygame.mixer.init()
+pygame.mixer_music.set_volume(0.5)
 WINDOW = pygame.display.set_mode((1296, 720))
 pygame.display.set_caption("Living Labyrinth")
 CLOCK = pygame.time.Clock()
@@ -17,6 +18,7 @@ MENU_SCREEN = pygame.image.load('assets/menuScreen.png').convert()
 START_BUTTON = pygame.image.load('assets/start.PNG').convert()
 END_SCREEN = pygame.image.load('assets/end.jpg').convert()
 WIN_SCREEN = pygame.image.load('assets/end2.jpg').convert()
+justplayed = None
 MUSIC_LIST = ['Sound/Aria Math.mp3', 'Sound/Beginning 2.mp3', 'Sound/Clark.mp3'
               , 'Sound/Danny.mp3', 'Sound/Dreiton.mp3', 'Sound/Dry Hands.mp3'
               , 'Sound/Haggstrom.mp3', 'Sound/Haunt Muskie.mp3', 'Sound/Living Mice.mp3'
@@ -83,7 +85,7 @@ class Game(object):
     def spawn_boots(self):
         side = (self.level + 1) * 4
         lside = (self.level + 1) * 4
-        for i in range(self.level + 1):
+        for i in range(1):
             if self.level > 1:
                 lside = 8
             boots = items.Boots([32 + 64 * random.randint(0, side - 1) + 5, 32 + 64 * random.randint(0, lside - 1)])
@@ -99,13 +101,13 @@ class Game(object):
             self.torches.append(torch)
 
     def spawn_bootsMulti(self):
-        for i in range(1, 2):
+        for i in range(1):
             boot = items.Boots([32 + 64 * i, 32 + 64 * i])
             self.boots.append(boot)
-        for j in range(1, 2):
+        for j in range(1):
             boot = items.Boots([32 + (64 * 2) + 64 * j, 32 + 64 * j])
             self.boots.append(boot)
-        for k in range(1, 2):
+        for k in range(1):
             boot = items.Boots([32 + (64 * 4) + 64 * k, 32 + 64 * k])
             self.boots.append(boot)
 
@@ -222,6 +224,9 @@ class Game(object):
             for event in pygame.event.get():
                 if not pygame.mixer_music.get_busy():
                     filename = random.choice(MUSIC_LIST)
+                    while filename == justplayed:
+                        filename = random.choice(MUSIC_LIST)
+                    justplayed = filename
                     pygame.mixer_music.load(filename)
                     print(filename)
                     pygame.mixer_music.play(0)
@@ -299,11 +304,6 @@ class Game(object):
         self.maze.MazeSkeleton(0, 0)
         self.maze.FillMaze()
         self.maze.ScrambleMaze()
-        randomlist = list(range(0, 16))
-        random.shuffle(randomlist)
-        pygame.mixer_music.load(MUSIC_LIST[randomlist.pop()])
-        pygame.mixer_music.set_volume(0.5)
-        pygame.mixer_music.play(-1)
         if self.level == 2 or self.level == 3:
             side = (self.level + 1) * 4
             self.compass = items.Compass([32 + 64 * random.randint(0, 4 - 1),
@@ -312,6 +312,14 @@ class Game(object):
             self.time += 1
             CLOCK.tick(60)
             for event in pygame.event.get():
+                if not pygame.mixer_music.get_busy():
+                    filename = random.choice(MUSIC_LIST)
+                    while filename == justplayed:
+                        filename = random.choice(MUSIC_LIST)
+                    justplayed = filename
+                    pygame.mixer_music.load(filename)
+                    print(filename)
+                    pygame.mixer_music.play(0)
                 if event.type == pygame.QUIT:
                     self.run = False
             keys = pygame.key.get_pressed()
